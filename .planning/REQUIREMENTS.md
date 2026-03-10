@@ -76,28 +76,28 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FNDN-01 | TBD | Pending |
-| FNDN-02 | TBD | Pending |
-| FNDN-03 | TBD | Pending |
-| FNDN-04 | TBD | Pending |
-| CORE-01 | TBD | Pending |
-| CORE-02 | TBD | Pending |
-| CORE-03 | TBD | Pending |
-| CORE-04 | TBD | Pending |
-| SECT-01 | TBD | Pending |
-| SECT-02 | TBD | Pending |
-| SECT-03 | TBD | Pending |
-| SECT-04 | TBD | Pending |
-| SUPP-01 | TBD | Pending |
-| SUPP-02 | TBD | Pending |
-| SUPP-03 | TBD | Pending |
-| DOCS-01 | TBD | Pending |
+| FNDN-01 | Phase 1: Reference Libraries | Pending |
+| FNDN-02 | Phase 1: Reference Libraries | Pending |
+| FNDN-03 | Phase 1: Reference Libraries | Pending |
+| FNDN-04 | Phase 2: Skill Conventions | Pending |
+| CORE-01 | Phase 3: Translation Skill | Pending |
+| CORE-02 | Phase 4: Polish Skill | Pending |
+| CORE-03 | Phase 5: De-AI Skill | Pending |
+| CORE-04 | Phase 6: Reviewer Simulation Skill | Pending |
+| SECT-01 | Phase 7: Abstract and Experiment Skills | Pending |
+| SECT-02 | Phase 8: Figure/Table and Logic Skills | Pending |
+| SECT-03 | Phase 7: Abstract and Experiment Skills | Pending |
+| SECT-04 | Phase 8: Figure/Table and Logic Skills | Pending |
+| SUPP-01 | Phase 9: Literature and Support Skills | Pending |
+| SUPP-02 | Phase 9: Literature and Support Skills | Pending |
+| SUPP-03 | Phase 9: Literature and Support Skills | Pending |
+| DOCS-01 | Phase 10: Documentation | Pending |
 
 **Coverage:**
 - v1 requirements: 16 total
-- Mapped to phases: 0
-- Unmapped: 16
+- Mapped to phases: 16
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-10*
-*Last updated: 2026-03-10 after initial definition*
+*Last updated: 2026-03-10 after roadmap creation*
