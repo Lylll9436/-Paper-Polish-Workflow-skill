@@ -1,170 +1,61 @@
 # Academic Expression Patterns
 
-A curated library of professional academic writing patterns for paper polishing.
+A modular reference library for academic writing in Claude Code Skills.
+
+This overview file stays at a stable path so downstream Skills can always load it first, then choose a narrower module when only one writing scenario is needed.
 
 ---
 
-## Sentence Starters
+## How to Use This Library
 
-### Background/Importance
+- Read this file when you need a quick orientation or want to choose the right module.
+- Load one leaf file when the task is scoped to a specific rhetorical move.
+- Prefer leaf files for long paper workflows to keep context usage low.
+- Keep `references/expression-patterns.md` as the default entrypoint in Skills and documentation.
 
-| Pattern | Example |
-|---------|---------|
-| [Topic] has gained increasing importance in... | Human perception of urban environments has gained increasing importance in urban planning. |
-| The significance of [topic] has been widely recognized... | The significance of street-level imagery has been widely recognized in urban studies. |
-| Understanding [topic] is essential for... | Understanding spatial patterns is essential for policy-making. |
-| [Topic] plays a crucial role in... | Data-driven methods play a crucial role in modern urban analytics. |
+## Load on Demand
 
-### Data/Methods Introduction
+| Need | Read This File | Why |
+|------|----------------|-----|
+| Introduce topic, state gap, frame contribution | `references/expression-patterns/introduction-and-gap.md` | Covers opening moves, literature gaps, and transition into contribution |
+| Describe data, study area, methods, or pipeline | `references/expression-patterns/methods-and-data.md` | Keeps methodological description precise and journal-ready |
+| Report findings and interpret them | `references/expression-patterns/results-and-discussion.md` | Helps with evidence reporting and disciplined discussion language |
+| Conclude claims, contributions, and future work | `references/expression-patterns/conclusions-and-claims.md` | Supports calibrated claims and closing paragraphs |
+| Add geography / urban-science phrasing | `references/expression-patterns/geography-domain.md` | Supplies domain-specific phrasing for space, place, policy, and planning |
 
-| Pattern | Example |
-|---------|---------|
-| [Data source] has emerged as a critical data source for... | Street view imagery has emerged as a critical data source for perception studies. |
-| The widespread availability of [data] has enabled... | The widespread availability of GPS data has enabled large-scale mobility analysis. |
-| Recent advances in [technology] have made it possible to... | Recent advances in deep learning have made it possible to automate feature extraction. |
+## Module Map
 
-### Gap Identification
+- `references/expression-patterns/introduction-and-gap.md`
+- `references/expression-patterns/methods-and-data.md`
+- `references/expression-patterns/results-and-discussion.md`
+- `references/expression-patterns/conclusions-and-claims.md`
+- `references/expression-patterns/geography-domain.md`
 
-| Pattern | Example |
-|---------|---------|
-| However, existing methods are limited by... | However, existing methods are limited by their reliance on pixel-level features. |
-| Despite significant progress, [challenge] remains... | Despite significant progress, interpretability remains a major challenge. |
-| A key limitation of current approaches is... | A key limitation of current approaches is their inability to capture semantic relations. |
-| While [method] has shown promise, it fails to... | While CNN-based methods have shown promise, they fail to model entity relationships. |
+## Stable Heading Contract
 
-### Method Introduction
+All leaf modules should keep these headings so future Skills can target them predictably:
 
-| Pattern | Example |
-|---------|---------|
-| To address these limitations, this study introduces... | To address these limitations, this study introduces a dual-layer framework. |
-| In response to [challenge], we propose... | In response to the interpretability challenge, we propose a graph-based approach. |
-| This paper presents a novel approach that... | This paper presents a novel approach that combines semantic graphs with urban context. |
-| We develop a [type] framework that... | We develop a scalable framework that leverages pre-trained models. |
+- `## Recommended Expressions`
+- `## Avoid Expressions`
+- `## Usage Scenarios`
+- `## Bilingual Example Patterns`
 
----
+## Quick Picks
 
-## Transition Phrases
+| Writing move | Quick expression | 中文提示 |
+|--------------|------------------|----------|
+| Emphasize importance | `[Topic] has become increasingly important in ...` | 用于引出研究背景，不要一上来就夸张声称“革命性” |
+| Mark a gap | `However, existing studies remain limited in ...` | 用于指出不足，语气保持克制 |
+| Describe evidence | `The results show that ...` | 先说结果，再补统计量或比较对象 |
+| Calibrate a claim | `These findings suggest that ...` | 用于避免过度结论化表达 |
 
-### Contrast/Limitation
+## Maintenance Rules
 
-| Phrase | Usage |
-|--------|-------|
-| However, | Introducing contrasting information |
-| Nevertheless, | Conceding a point while maintaining argument |
-| Despite this, | Acknowledging limitation before continuing |
-| In contrast, | Comparing different approaches |
-| On the other hand, | Presenting alternative perspective |
-
-### Addition/Extension
-
-| Phrase | Usage |
-|--------|-------|
-| Furthermore, | Adding supporting evidence |
-| Moreover, | Strengthening previous point |
-| In addition, | Adding new information |
-| Additionally, | Supplementing existing content |
-| Building on this, | Extending previous work |
-
-### Cause/Effect
-
-| Phrase | Usage |
-|--------|-------|
-| As a result, | Showing consequence |
-| Consequently, | Indicating logical outcome |
-| Therefore, | Drawing conclusion |
-| Thus, | Summarizing implication |
-| This leads to... | Connecting cause and effect |
-
-### Sequence
-
-| Phrase | Usage |
-|--------|-------|
-| First, / Second, / Third, | Ordering steps or points |
-| Subsequently, | Indicating following action |
-| Following this, | Continuing sequence |
-| Finally, | Introducing last point |
-| In the first instance, | Formal sequencing |
+- Add new patterns to the most specific leaf file possible.
+- Keep overview content short; detailed tables belong in leaf modules.
+- If a leaf file becomes too broad, split it without changing this overview path.
 
 ---
 
-## Hedging Language
-
-### Possibility
-
-| Phrase | Strength |
-|--------|----------|
-| may / might | Moderate possibility |
-| could potentially | Careful suggestion |
-| is likely to | Higher probability |
-| appears to | Tentative observation |
-| seems to suggest | Cautious interpretation |
-
-### Frequency
-
-| Phrase | Meaning |
-|--------|---------|
-| in most cases | Generally true |
-| typically | Usually |
-| often | Frequently |
-| occasionally | Sometimes |
-| rarely | Infrequently |
-
-### Qualification
-
-| Phrase | Purpose |
-|--------|---------|
-| to some extent | Limiting scope |
-| in certain contexts | Specifying conditions |
-| under specific conditions | Adding constraints |
-| with some limitations | Acknowledging bounds |
-| within this framework | Scoping claims |
-
----
-
-## Results Presentation
-
-### Quantitative Results
-
-| Pattern | Example |
-|---------|---------|
-| achieves an accuracy of X% | The model achieves an accuracy of 87.3%. |
-| outperforms [baseline] by X% | Our method outperforms the baseline by 5.2%. |
-| shows a significant improvement of X% | Results show a significant improvement of 12% in AUC. |
-| demonstrates X% reduction in [metric] | The approach demonstrates 30% reduction in error rate. |
-
-### Comparative Results
-
-| Pattern | Example |
-|---------|---------|
-| consistently outperforms all baselines | Our framework consistently outperforms all baselines. |
-| achieves state-of-the-art performance | The model achieves state-of-the-art performance on all benchmarks. |
-| shows comparable results to [method] | The lightweight version shows comparable results to full models. |
-| significantly exceeds [method] in [metric] | Our approach significantly exceeds prior methods in interpretability. |
-
----
-
-## Conclusion Phrases
-
-### Summary
-
-| Pattern | Example |
-|---------|---------|
-| This study has demonstrated that... | This study has demonstrated that semantic features improve prediction accuracy. |
-| Our findings indicate that... | Our findings indicate that urban context is crucial for perception modeling. |
-| The results suggest that... | The results suggest that graph-based methods outperform pixel-level approaches. |
-
-### Implications
-
-| Pattern | Example |
-|---------|---------|
-| These findings have important implications for... | These findings have important implications for urban planning practice. |
-| This work contributes to... | This work contributes to the growing body of literature on urban perception. |
-| The proposed framework can be applied to... | The proposed framework can be applied to various urban analytics tasks. |
-
-### Future Work
-
-| Pattern | Example |
-|---------|---------|
-| Future work should explore... | Future work should explore cross-cultural perception differences. |
-| Further research is needed to... | Further research is needed to validate these findings in other contexts. |
-| A promising direction for future research is... | A promising direction for future research is real-time perception monitoring. |
+*Entry point: references/expression-patterns.md*
+*Updated for modular loading: 2026-03-11*
