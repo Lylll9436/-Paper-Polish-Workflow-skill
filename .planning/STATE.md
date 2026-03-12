@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 09-literature-support-skills 09-02-PLAN.md
-last_updated: "2026-03-12T14:37:21.748Z"
+stopped_at: Completed 09-01-PLAN.md
+last_updated: "2026-03-12T14:38:20.472Z"
 last_activity: 2026-03-12 — Phase 6 executed; reviewer simulation skill created
 progress:
   total_phases: 10
-  completed_phases: 8
+  completed_phases: 9
   total_plans: 14
-  completed_plans: 13
+  completed_plans: 14
   percent: 100
 ---
 
@@ -60,6 +60,8 @@ Progress: [██████████] 100%
 | Phase 08-figure-table-and-logic-skills P02 | 2 | 2 tasks | 1 files |
 | Phase 08-figure-table-and-logic-skills P01 | 3 | 2 tasks | 1 files |
 | Phase 09-literature-support-skills P02 | 3 | 2 tasks | 1 files |
+| Phase 09-literature-support-skills P01 | 3 | 2 tasks | 1 files |
+| Phase 09-literature-support-skills P03 | 3 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -105,6 +107,11 @@ Recent decisions affecting current work:
 - [Phase 08]: Caption Skill geography-conditional Ask Strategy: figure type question gates entire spatial metadata branch (study area, CRS, legend)
 - [Phase 09-literature-support-skills]: Cover letter contribution statement must explicitly reference loaded journal scope — never generic framing
 - [Phase 09-literature-support-skills]: File input produces {input}_cover_letter.md; pasted text outputs in conversation — matches reviewer-simulation-skill convention
+- [Phase 09-literature-support-skills]: Literature Skill MCP unavailability triggers immediate refuse with setup instructions — no partial fallback mode
+- [Phase 09-literature-support-skills]: Single-shot search only: no in-session iterative refinement; user re-triggers with different keywords
+- [Phase 09-literature-support-skills]: BibTeX fields constructed from MCP-returned data exclusively; missing fields omitted rather than filled from prior knowledge
+- [Phase 09-literature-support-skills]: Anti-hallucination verification prompt is mandatory after user paper selection (per CLAUDE.md principle)
+- [Phase 09]: Visualization Skill uses direct mode only and spatial signal keyword scan gates geography chart inclusion; tool hints use inline function names, no code blocks; output is always conversation-only
 
 ### Pending Todos
 
@@ -117,6 +124,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-12T14:37:09.539Z
-Stopped at: Completed 09-literature-support-skills 09-02-PLAN.md
+Last session: 2026-03-12T14:37:57.917Z
+Stopped at: Completed 09-01-PLAN.md
 Resume file: None

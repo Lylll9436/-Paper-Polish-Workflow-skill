@@ -31,7 +31,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Support Skills (SUPP)
 
 - [x] **SUPP-01**: Cover letter Skill generates submission cover letters based on paper content and target journal requirements
-- [ ] **SUPP-02**: Literature search Skill uses Semantic Scholar MCP to find relevant papers, verify citations, and generate BibTeX entries
+- [x] **SUPP-02**: Literature search Skill uses Semantic Scholar MCP to find relevant papers, verify citations, and generate BibTeX entries
 - [ ] **SUPP-03**: Visualization recommendation Skill suggests appropriate chart types for experimental results with geography-specific options (choropleth, spatial plots)
 
 ### Documentation (DOCS)
@@ -89,7 +89,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SECT-03 | Phase 7: Abstract and Experiment Skills | Complete |
 | SECT-04 | Phase 8: Figure/Table and Logic Skills | Complete |
 | SUPP-01 | Phase 9: Literature and Support Skills | Complete |
-| SUPP-02 | Phase 9: Literature and Support Skills | Pending |
+| SUPP-02 | Phase 9: Literature and Support Skills | Complete |
 | SUPP-03 | Phase 9: Literature and Support Skills | Pending |
 | DOCS-01 | Phase 10: Documentation | Pending |
 
