@@ -19,7 +19,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **CORE-01**: Chinese-to-English translation Skill accepts Chinese draft and outputs polished English academic text in LaTeX format
 - [x] **CORE-02**: English polishing Skill with flexible flow supporting both quick-fix mode (direct polish) and guided mode (structure → logic → expression)
 - [x] **CORE-03**: De-AI Skill detects AI-generated patterns and rewrites text to reduce detection scores while maintaining academic quality
-- [ ] **CORE-04**: Reviewer simulation Skill reviews paper from reviewer perspective, identifies weaknesses, and provides actionable improvement suggestions
+- [x] **CORE-04**: Reviewer simulation Skill reviews paper from reviewer perspective, identifies weaknesses, and provides actionable improvement suggestions
 
 ### Section Skills (SECT)
 
@@ -83,7 +83,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CORE-01 | Phase 3: Translation Skill | Complete |
 | CORE-02 | Phase 4: Polish Skill | Complete |
 | CORE-03 | Phase 5: De-AI Skill | Complete |
-| CORE-04 | Phase 6: Reviewer Simulation Skill | Pending |
+| CORE-04 | Phase 6: Reviewer Simulation Skill | Complete |
 | SECT-01 | Phase 7: Abstract and Experiment Skills | Pending |
 | SECT-02 | Phase 8: Figure/Table and Logic Skills | Pending |
 | SECT-03 | Phase 7: Abstract and Experiment Skills | Pending |
