@@ -16,7 +16,19 @@
 
 ## 安装说明
 
-### 方式一：通过 GitHub Packages 安装（推荐）
+### 方式一：通过 Claude Code 安装（推荐）
+
+将以下 prompt 直接粘贴到 Claude Code 中执行：
+
+> 请从 GitHub Packages 安装 `@lylll9436/paper-polish-workflow-skill` 到当前项目：
+>
+> 1. 在 `~/.npmrc` 中添加 `@lylll9436:registry=https://npm.pkg.github.com`（如果还没有的话）
+> 2. 运行 `npm install @lylll9436/paper-polish-workflow-skill`
+> 3. 将 `node_modules/@lylll9436/paper-polish-workflow-skill/.claude/skills/` 下所有子目录复制到当前项目的 `.claude/skills/`
+> 4. 将 `node_modules/@lylll9436/paper-polish-workflow-skill/references/` 复制到 `.claude/references/`
+> 5. 安装完成后清理 node_modules
+
+### 方式二：手动安装
 
 ```bash
 # 1. 配置 npm 使用 GitHub Packages registry
@@ -29,18 +41,6 @@ npm install @lylll9436/paper-polish-workflow-skill
 cp -r node_modules/@lylll9436/paper-polish-workflow-skill/.claude/skills/* .claude/skills/
 cp -r node_modules/@lylll9436/paper-polish-workflow-skill/references/ .claude/references/
 ```
-
-### 方式二：通过 Claude Code 安装
-
-将以下 prompt 直接粘贴到 Claude Code 中执行：
-
-> 请从 GitHub Packages 安装 `@lylll9436/paper-polish-workflow-skill` 到当前项目：
->
-> 1. 在 `~/.npmrc` 中添加 `@lylll9436:registry=https://npm.pkg.github.com`（如果还没有的话）
-> 2. 运行 `npm install @lylll9436/paper-polish-workflow-skill`
-> 3. 将 `node_modules/@lylll9436/paper-polish-workflow-skill/.claude/skills/` 下所有子目录复制到当前项目的 `.claude/skills/`
-> 4. 将 `node_modules/@lylll9436/paper-polish-workflow-skill/references/` 复制到 `.claude/references/`
-> 5. 安装完成后清理 node_modules
 
 ### Semantic Scholar MCP 配置（适用于 literature-skill）
 
@@ -134,7 +134,19 @@ cp -r node_modules/@lylll9436/paper-polish-workflow-skill/references/ .claude/re
 
 ## Installation
 
-### Option 1: Install via GitHub Packages (Recommended)
+### Option 1: Install via Claude Code (Recommended)
+
+Paste the following prompt directly into Claude Code:
+
+> Install `@lylll9436/paper-polish-workflow-skill` from GitHub Packages into the current project:
+>
+> 1. Add `@lylll9436:registry=https://npm.pkg.github.com` to `~/.npmrc` if not already present
+> 2. Run `npm install @lylll9436/paper-polish-workflow-skill`
+> 3. Copy all subdirectories from `node_modules/@lylll9436/paper-polish-workflow-skill/.claude/skills/` to `.claude/skills/` in the current project
+> 4. Copy `node_modules/@lylll9436/paper-polish-workflow-skill/references/` to `.claude/references/`
+> 5. Clean up node_modules after installation
+
+### Option 2: Manual Installation
 
 ```bash
 # 1. Configure npm to use GitHub Packages registry
@@ -147,18 +159,6 @@ npm install @lylll9436/paper-polish-workflow-skill
 cp -r node_modules/@lylll9436/paper-polish-workflow-skill/.claude/skills/* .claude/skills/
 cp -r node_modules/@lylll9436/paper-polish-workflow-skill/references/ .claude/references/
 ```
-
-### Option 2: Install via Claude Code
-
-Paste the following prompt directly into Claude Code:
-
-> Install `@lylll9436/paper-polish-workflow-skill` from GitHub Packages into the current project:
->
-> 1. Add `@lylll9436:registry=https://npm.pkg.github.com` to `~/.npmrc` if not already present
-> 2. Run `npm install @lylll9436/paper-polish-workflow-skill`
-> 3. Copy all subdirectories from `node_modules/@lylll9436/paper-polish-workflow-skill/.claude/skills/` to `.claude/skills/` in the current project
-> 4. Copy `node_modules/@lylll9436/paper-polish-workflow-skill/references/` to `.claude/references/`
-> 5. Clean up node_modules after installation
 
 ### Semantic Scholar MCP Setup (for literature-skill)
 
