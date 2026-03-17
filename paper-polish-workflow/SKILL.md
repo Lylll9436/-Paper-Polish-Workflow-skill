@@ -1,348 +1,193 @@
 ---
 name: paper-polish-workflow
-description: Systematic AI-assisted workflow for polishing academic papers. Top-down approach from structure to expression. Triggers: polish paper, revise paper, improve paper writing, 润色论文, 精修论文, academic writing
+description: >-
+  Systematic top-down workflow for polishing academic papers.
+  Structure to logic to expression with user confirmation at each step.
+  润色论文、精修论文、学术写作改进。
+triggers:
+  primary_intent: polish academic paper through structured top-down workflow
+  examples:
+    - "Polish my paper section by section"
+    - "润色论文"
+    - "Help me revise my introduction step by step"
+    - "精修论文"
+    - "Guide me through polishing this draft"
+    - "帮我逐步润色这篇论文"
+tools:
+  - Read
+  - Edit
+  - Structured Interaction
+references:
+  required:
+    - references/expression-patterns.md
+  leaf_hints:
+    - references/expression-patterns/introduction-and-gap.md
+    - references/expression-patterns/methods-and-data.md
+    - references/expression-patterns/results-and-discussion.md
+    - references/expression-patterns/conclusions-and-claims.md
+    - references/expression-patterns/geography-domain.md
+    - references/anti-ai-patterns.md
+    - references/journals/ceus.md
+input_modes:
+  - file
+  - pasted_text
+output_contract:
+  - polished_text
+  - change_summary
 ---
 
-# Skill: Academic Paper Polish Workflow
+## Purpose
 
-A systematic, top-down workflow for polishing academic papers. Works from structure → logic → expression, with user confirmation at each step.
+This Skill provides a systematic, top-down workflow for polishing academic papers. It works from structure to logic to expression, with user confirmation at each decision point. Expression options are drawn from reference-driven academic patterns rather than ad hoc rewrites, ensuring professional and consistent output suitable for journal submission.
 
-## Key Features
+## Trigger
 
-- **Top-down approach**: Structure → Sentence Logic → Expression
-- **User-led**: Confirm at each step before proceeding
-- **Option-based**: Provide 2-4 expression options using `mcp_question` for efficient selection
-- **Reference-driven**: Consult example papers for professional phrasing
+**Activates when the user asks to:**
+- Polish, revise, or improve an academic paper section by section
+- 润色、精修、逐步改进学术论文
 
----
+**Example invocations:**
+- "Polish my paper section by section" / "润色论文"
+- "Help me revise my introduction step by step" / "精修论文"
+- "Guide me through polishing this draft" / "帮我逐步润色这篇论文"
 
-## Trigger Conditions
+## Modes
 
-Use this skill when user requests:
-- "润色论文" / "精修论文"
-- "polish paper" / "revise paper section"
-- "help me improve my paper writing"
+| Mode | Default | Behavior |
+|------|---------|----------|
+| `interactive` | Yes | Full 4-step flow with user confirmation at each decision point |
+| `guided` | | Multi-pass with confirmation at key checkpoints only |
+| `direct` | | Single-pass polish using defaults; skip AskUserQuestion |
+| `batch` | | Same operation applied across multiple sections sequentially |
 
----
+**Default mode:** `interactive`
 
-## Core Principles
+**Mode inference:** "quickly" or "just fix" switches to `direct`. "step by step" or "逐步" confirms `interactive` (already default).
 
-1. **Top-down (从大到小)**: Structure → Logic → Expression (never jump to wording before confirming logic)
-2. **User-led (用户主导)**: Every step requires user confirmation before proceeding
-3. **Option-based (选项制)**: Use `mcp_question` tool to present expression choices efficiently
-4. **Reference-driven (范文驱动)**: When user questions professionalism, consult example papers
-5. **Sentence-by-sentence (逐句确认)**: Don't present large blocks of changes; confirm incrementally
+## References
 
----
+### Required (always loaded)
 
-## Complete Workflow
-
-### Phase 0: Pre-Polish Baseline (预检基线)
-
-Collect the following before starting:
-
-```markdown
-## Pre-Polish Checklist
-- [ ] Target journal and requirements (word limits, abstract limits, special formats)
-- [ ] Current section word count vs target
-- [ ] Key numbers extraction (city count, data scale, performance metrics)
-- [ ] Example papers location (if available)
-- [ ] Any previous analysis reports to reference
-```
-
-**Ask user**:
-1. What is the target journal? Any special requirements?
-2. Where are the example/reference papers?
-3. Which section to start with?
-
----
-
-### Step 1: Confirm Macro Structure (确认宏观结构)
-
-**Purpose**: Confirm the logical composition of the section
-
-**Actions**:
-1. Read current section content
-2. Analyze and list logical structure (e.g., Abstract = Background + Gap + Method + Results + Contribution)
-3. Present structure table for user confirmation
-
-**Output Format**:
-```markdown
-## [Section] Structure Analysis
-
-| Component | Function | Suggested Proportion |
-|-----------|----------|---------------------|
-| Background | Importance of research area | 1-2 sentences |
-| Gap | Limitations of existing methods | 1-2 sentences |
-| Method | Overview of proposed approach | 3-4 sentences |
-| Results | Key findings | 1-2 sentences |
-| Contribution | Research significance | 1 sentence |
-
-**Please confirm this structure, or describe adjustments needed.**
-```
-
-**Checkpoint**: User confirms structure before proceeding to Step 2
-
----
-
-### Step 2: Confirm Per-Sentence Logic (确认每句话的逻辑)
-
-**Purpose**: Break down structure into specific logic points for each sentence
-
-**Actions**:
-1. Split current content into sentences
-2. Assign logical function to each sentence
-3. Present logic chain table
-
-**Output Format**:
-```markdown
-## Per-Sentence Logic Mapping
-
-| Sentence | Logic Function | Key Points |
-|----------|----------------|------------|
-| S1 | Background | Urban perception importance for planning |
-| S2 | Data | SVI as critical data source |
-| S3 | Gap | Pixel-level → ignores entity relations → black box |
-| ... | ... | ... |
-
-**Please confirm each sentence's logic:**
-- S1: ✅ Confirm / ❌ Modify (please describe)
-- S2: ✅ Confirm / ❌ Modify
-- ...
-```
-
-**Checkpoint**: User confirms all sentence logic before proceeding to Step 3
-
----
-
-### Step 3: Confirm Specific Expressions - Using mcp_question (确认具体表达)
-
-**Purpose**: Based on confirmed logic, provide expression options for each sentence
-
-**IMPORTANT: Use `mcp_question` tool for efficient multi-selection**
-
-**Actions**:
-1. Process 3-5 sentences at a time (batch for efficiency)
-2. Provide 2-4 expression options per sentence
-3. Call `mcp_question` with all options
-
-**Implementation Example**:
-
-```javascript
-mcp_question({
-  questions: [
-    {
-      question: "S1: Urban perception importance for planning decisions",
-      header: "S1 Expression",
-      options: [
-        { 
-          label: "A", 
-          description: "Human perception of urban environments has gained increasing importance in urban planning, wellbeing research, and policy-making." 
-        },
-        { 
-          label: "B", 
-          description: "How people perceive urban environments has become increasingly influential in urban planning and public health." 
-        },
-        { 
-          label: "C", 
-          description: "Understanding how people perceive street environments is essential for urban planning and policy decisions." 
-        }
-      ],
-      multiple: false
-    },
-    {
-      question: "S2: Traditional methods are limited",
-      header: "S2 Expression",
-      options: [
-        { 
-          label: "A", 
-          description: "Traditional methods such as field surveys and questionnaires are costly, time-consuming, and limited in spatial coverage." 
-        },
-        { 
-          label: "B", 
-          description: "Conventional approaches relying on surveys face constraints in cost, time, and scalability." 
-        },
-        { 
-          label: "C", 
-          description: "Measuring perception through traditional surveys is resource-intensive and difficult to scale." 
-        }
-      ],
-      multiple: false
-    }
-  ]
-})
-```
-
-**Benefits of mcp_question**:
-- User can answer multiple sentences in one interaction
-- Cleaner UI than text-based selection
-- Reduces back-and-forth conversation turns
-- User can type custom answers (custom option enabled by default)
-
-**Fallback**: If mcp_question is unavailable, use text-based table format:
-```markdown
-| Option | Expression |
-|--------|------------|
-| A | ... |
-| B | ... |
-| C | ... |
-
-Select A / B / C or provide your version?
-```
-
----
-
-### Step 4: Reference Paper Consultation (范文参考)
-
-**Trigger**: When user questions whether an expression is professional
-
-**Actions**:
-1. Read example papers (usually PDFs, use `mcp_look_at` to analyze)
-2. Extract relevant expression patterns from similar sections
-3. Provide new options based on reference patterns
-
-**Output Format**:
-```markdown
-## Reference Paper Patterns
-
-| Paper | Opening Sentence | Pattern |
-|-------|-----------------|---------|
-| Paper 1 | "Street view imagery has become..." | [Data source] has become important for [field] |
-| Paper 2 | "Measuring urban safety perception is..." | [Task] is important and complex |
-
-## New Options Based on References
-
-| Option | Expression | Reference Pattern |
-|--------|------------|-------------------|
-| A | ... | Paper 1 pattern |
-| B | ... | Paper 2 pattern |
-```
-
----
-
-### Step 4.5: Journal Style Check (期刊风格检查)
-
-Apply journal-specific style requirements. For full checklist, see `references/journals/ceus.md`.
-
----
----
-
-### Step 5: Repetition & Coherence Check (重复与连贯性检查)
-
-**Actions**:
-1. Check for repeated expressions between sentences/paragraphs
-2. Check if transition words are needed
-3. Present issues and suggest fixes
-
-**Use mcp_question for transition word selection**:
-
-```javascript
-mcp_question({
-  questions: [
-    {
-      question: "S3→S4 transition: From 'problem' to 'solution'",
-      header: "Transition Word",
-      options: [
-        { label: "A: Add 'To address these limitations'", description: "To address these limitations, this study introduces..." },
-        { label: "B: Add 'In response'", description: "In response, this study introduces..." },
-        { label: "C: Add 'Building on these opportunities'", description: "Building on these opportunities, we introduce..." },
-        { label: "D: Keep as is", description: "No transition word needed" }
-      ],
-      multiple: false
-    }
-  ]
-})
-```
-
-**Output Format**:
-```markdown
-## Repetition Check
-
-| Location | Repeated Content | Suggestion |
-|----------|-----------------|------------|
-| S4 vs S10 | Both mention "pre-trained GNN" | Remove from S4, keep in S10 |
-
-## Coherence Check
-
-| Location | Issue | Suggestion |
-|----------|-------|------------|
-| S3→S4 | Abrupt transition | Add "To address these limitations, " |
-```
-
----
-
-### Step 5.5: Cross-Section Consistency (跨章节一致性)
-
-**Check items**:
-- Numbers consistent across sections (e.g., city count, data scale)
-- Terminology consistent (e.g., SVI vs street view imagery)
-- Claims in Abstract match Conclusion
-
----
-
-### Step 5.7: Generate Highlights - Journal Required (生成Highlights)
-
-Generate highlights according to journal requirements. For CEUS format and examples, see `references/journals/ceus.md`.
-
----
-
-### Step 6: Read-Aloud Final Check (朗读最终检查)
-
-**Suggest to user**:
-1. Read the final version aloud
-2. Mark awkward phrasing
-3. Check sentence length (if hard to read without pause, consider splitting)
-
----
-
-### Write to File (写入文件)
-
-**Actions**:
-1. Compile all confirmed content
-2. Present final version for user confirmation
-3. Write to `*_polished.md` file after confirmation
-
-**Output Format**:
-```markdown
-## Final Version
-
-> [Complete polished content]
-
-**Word Count**: XXX words
-
-**Confirm to write to file?**
-```
-
----
-
-## Journal-Specific Requirements
-
-Journal templates are stored in `references/journals/`. Currently supported:
-
-- **CEUS** (Computers, Environment and Urban Systems): See `references/journals/ceus.md`
-
----
-
-## Common Issue Handling
-
-| Issue | Solution |
-|-------|----------|
-| "This word isn't professional" | Use `mcp_look_at` to analyze example papers, provide reference-based options |
-| "This sentence is abrupt" | Provide transition options: "To address...", "In response...", "However..." |
-| "There's repetition" | Identify repeated content, suggest which to remove |
-| "Modify logic structure" | Return to Step 1 or Step 2 to re-confirm |
-| "Expand/reduce word count" | Identify paragraphs to adjust, get user confirmation |
----
-
-## Tools Used
-
-| Tool | Purpose |
+| File | Purpose |
 |------|---------|
-| `mcp_read` | Read current paper sections |
-| `mcp_look_at` | Analyze example paper PDFs |
-| `mcp_question` | **Primary tool for expression selection** - present options efficiently |
-| `mcp_write` | Write polished content to file |
-| `mcp_edit` | Make targeted edits to existing files |
+| `references/expression-patterns.md` | Academic expression patterns overview and module index |
+
+### Leaf Hints (loaded when needed)
+
+| File | When to Load |
+|------|--------------|
+| `references/expression-patterns/introduction-and-gap.md` | Polishing introduction or background content |
+| `references/expression-patterns/methods-and-data.md` | Polishing methods, data, or study area content |
+| `references/expression-patterns/results-and-discussion.md` | Polishing results or discussion content |
+| `references/expression-patterns/conclusions-and-claims.md` | Polishing conclusion content |
+| `references/expression-patterns/geography-domain.md` | Content involves spatial, urban, or planning topics |
+| `references/anti-ai-patterns.md` | Polishing expression (Step 3) -- screen for AI-sounding phrases |
+| `references/journals/ceus.md` | Target journal is CEUS |
+
+### Loading Rules
+
+- Load expression patterns overview at start; select the appropriate leaf based on section type.
+- Load anti-AI patterns when polishing expression (Step 3).
+- Load journal template when target journal is specified.
+- Load `geography-domain.md` when spatial, urban, or planning content is detected.
+- If a reference file is missing, warn the user and proceed with reduced capability.
+
+## Ask Strategy
+
+**Before starting, ask about:**
+1. Target journal (if not already known)
+2. Which section to work on
+3. Preferred mode (if ambiguous from trigger)
+
+**Rules:**
+- Never ask more than 3 questions before producing initial output.
+- In `direct` mode, skip pre-questions if the user provided enough context.
+- In `batch` mode, skip per-item questions; apply settings from the first item.
+- Use Structured Interaction when available; fall back to plain-text questions otherwise.
+- See `skill-conventions.md > AskUserQuestion Enforcement` for full rules.
+
+## Workflow
+
+### Step 1: Collect Context
+
+- Determine input type (file path or pasted text).
+- Load required references (expression-patterns overview).
+- Identify target journal; load journal template if specified.
+- Read input content using the Read tool; extract key numbers, claims, and data points.
+- Locate example/reference papers if the user provides them (use Read tool for PDFs).
+- In `interactive` or `guided` mode: confirm scope with the user before proceeding.
+
+### Step 2: Structure & Logic Confirmation
+
+- Analyze section macro structure (e.g., Abstract = Background + Gap + Method + Results + Contribution).
+- Present a structure table for user confirmation.
+- Break content into sentences; assign a logic function to each.
+- Present the logic chain for user confirmation.
+- Checkpoint: user confirms structure and logic before expression work begins.
+- In `direct` mode: run structure and logic analysis internally, proceed to Step 3 automatically.
+
+### Step 3: Expression Polish & Consistency
+
+- Load the section-appropriate expression pattern leaf and anti-AI patterns.
+- For each sentence with expression issues, present 2-3 options via AskUserQuestion (`interactive` mode) or apply the best option automatically (`direct` mode).
+
+```
+AskUserQuestion({
+  question: "Which expression do you prefer for [sentence function]?",
+  options: [
+    { label: "[Expression A]", description: "[full sentence with expression A]" },
+    { label: "[Expression B]", description: "[full sentence with expression B]" },
+    { label: "[Expression C]", description: "[full sentence with expression C]" }
+  ]
+})
+```
+
+- **Reference paper consultation:** when the user questions professionalism, use the Read tool to load example papers and extract expression patterns.
+- **Journal style check:** apply journal-specific requirements from the loaded template.
+- **Repetition and coherence pass:** check for repeated expressions and missing transitions; suggest fixes.
+- **Cross-section consistency:** verify numbers, terminology, and claims across sections.
+
+### Step 4: Output
+
+- Generate highlights if the journal requires them (for CEUS, see `references/journals/ceus.md`).
+- Suggest a read-aloud final check to catch awkward phrasing.
+- Compile all confirmed content into the final version.
+- Present the final version with word count for user confirmation.
+- Write to `*_polished.md` after confirmation (or automatically in `batch` mode).
+- Report word count and any journal constraint notes.
+
+## Output Contract
+
+| Output | Format | Condition |
+|--------|--------|-----------|
+| `polished_text` | Markdown file (`*_polished.md`) or conversation output | Always produced |
+| `change_summary` | Markdown in session | Always produced |
+| Word count | Integer | Always reported |
+| Journal compliance notes | Bullet list | When a target journal is specified |
+
+## Edge Cases
+
+| Situation | Handling |
+|-----------|----------|
+| Unprofessional word flagged | Present 2-3 alternatives via AskUserQuestion; accept if user insists |
+| Section too long for single pass | Split into paragraph-level sub-passes; maintain cross-paragraph coherence |
+| No journal specified | Default to general academic style; note in output |
+| Mixed language input | Detect dominant language; ask user to confirm target language |
+| Reference paper provided as PDF | Use Read tool to load PDF; extract style patterns for expression matching |
+| Abrupt sentence transition | Provide transition options via AskUserQuestion |
+| Repetition detected between sections | Identify repeated content; suggest which occurrence to rephrase |
+| Logic structure needs modification | Return to Step 2 to re-confirm structure before continuing |
+
+## Fallbacks
+
+| Scenario | Fallback |
+|----------|----------|
+| Structured Interaction unavailable | Ask 1-3 plain-text questions covering highest-impact gaps; do not block workflow |
+| Reference file missing | Log the missing file, proceed with reduced capability, warn the user |
+| Target journal not specified | Ask once; if declined, use general academic style |
+| PDF reference paper unreadable | Ask user to paste relevant excerpts instead |
 
 ---
 
+*Skill: paper-polish-workflow*
+*Conventions: references/skill-conventions.md*
