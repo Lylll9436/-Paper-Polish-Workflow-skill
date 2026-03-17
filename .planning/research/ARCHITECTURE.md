@@ -1,373 +1,635 @@
-# Architecture Patterns
+# Architecture Research: v2.0 Integration
 
-**Domain:** Multi-Skill Academic Writing Tool Suite for Claude Code
-**Researched:** 2026-03-10
+**Domain:** Multi-Skill Academic Writing Tool Suite for Claude Code (subsequent milestone)
+**Researched:** 2026-03-17
+**Confidence:** HIGH -- all integration points verified against existing codebase
 
-## Recommended Architecture
+## Executive Summary
 
-### High-Level Structure
+v2.0 adds three features to an established 11-Skill architecture: (1) a new Repo-to-Paper Skill that scans code repositories and generates structured paper drafts in a top-down H1-H2-H3-body workflow, (2) bilingual paragraph-by-paragraph comparison output extended across translation, polish, and the new repo-to-paper Skill, and (3) a prompt engineering fix for AskUserQuestion misuse in the legacy paper-polish-workflow SKILL.md.
 
-```
-.claude/skills/
-  paper-translate/
-    SKILL.md
-  paper-polish/
-    SKILL.md
-  paper-deai/
-    SKILL.md
-  paper-review/
-    SKILL.md
-  paper-logic/
-    SKILL.md
-  paper-figures/
-    SKILL.md
-  paper-experiment/
-    SKILL.md
-  paper-abstract/
-    SKILL.md
-  paper-coverletter/
-    SKILL.md
-  paper-litreview/
-    SKILL.md
-  paper-visualize/
-    SKILL.md
+The existing architecture is well-suited for these additions. The flat multi-Skill pattern, shared reference library, and convention system all remain valid. No structural changes to v1.0 components are required. The primary new artifact is a single new Skill directory (`.claude/skills/repo-to-paper-skill/`), plus a new reference file category for literature metadata saved during repo-to-paper execution.
 
-references/
-  expression-patterns.md
-  academic-phrases.md
-  anti-ai-patterns.md
-  journals/
-    ceus.md
-    ijgis.md
-    cities.md
-```
-
-This is a **flat multi-Skill architecture** where each Skill is an independent directory under `.claude/skills/`, and shared reference material lives in a top-level `references/` directory that all Skills read via relative paths.
-
-### Why This Structure (Not Alternatives)
-
-**Alternative rejected: Single monolithic Skill with routing.**
-A single Skill would exceed the 500-line recommended limit, load unnecessary context for every task, and create a brittle routing layer. The official best practices explicitly recommend keeping SKILL.md under 500 lines and splitting concerns into separate Skills.
-
-**Alternative rejected: Nested skills (skills-within-skills).**
-Claude Code does not support nesting skills. Each Skill must be a top-level directory with its own SKILL.md. Composition happens via Claude invoking one Skill from within another using the Skill tool, but this is fragile and not recommended for tightly coupled workflows.
-
-**Alternative rejected: All resources bundled inside each Skill directory.**
-Duplicating expression-patterns.md and journal templates inside every Skill's directory would create maintenance nightmares. A shared `references/` directory at the repo root is the correct pattern -- every Skill can read these files using `Read` tool with relative paths from the project root.
-
-## Component Boundaries
-
-| Component | Type | Responsibility | Location |
-|-----------|------|---------------|----------|
-| Translation Skill | Skill | Chinese-to-English academic translation with LaTeX output | `.claude/skills/paper-translate/` |
-| Polish Skill | Skill | Structure-to-expression paper polishing workflow | `.claude/skills/paper-polish/` |
-| De-AI Skill | Skill | Detect and rewrite AI-generated patterns | `.claude/skills/paper-deai/` |
-| Review Skill | Skill | Reviewer-perspective paper critique | `.claude/skills/paper-review/` |
-| Logic Skill | Skill | Cross-section logic chain verification | `.claude/skills/paper-logic/` |
-| Figures Skill | Skill | Figure/table caption generation and optimization | `.claude/skills/paper-figures/` |
-| Experiment Skill | Skill | Experiment result analysis and discussion | `.claude/skills/paper-experiment/` |
-| Abstract Skill | Skill | Abstract and cover letter generation | `.claude/skills/paper-abstract/` |
-| Cover Letter Skill | Skill | Cover letter generation for journal submission | `.claude/skills/paper-coverletter/` |
-| Lit Review Skill | Skill | Literature search via Semantic Scholar MCP | `.claude/skills/paper-litreview/` |
-| Visualization Skill | Skill | Experimental result visualization guidance | `.claude/skills/paper-visualize/` |
-| Expression Patterns | Reference | Curated academic phrase library | `references/expression-patterns.md` |
-| Anti-AI Patterns | Reference | AI-detectable patterns and human alternatives | `references/anti-ai-patterns.md` |
-| Journal Templates | Reference | Per-journal requirements, style guides, word budgets | `references/journals/*.md` |
-
-### Component Independence Levels
-
-| Skill | Fully Independent | Reads References | May Chain After |
-|-------|-------------------|------------------|-----------------|
-| Translation | Yes | expression-patterns, journal template | -- |
-| Polish | Yes | expression-patterns, journal template | Translation |
-| De-AI | Yes | anti-ai-patterns | Polish, Translation |
-| Review | Yes | journal template | -- |
-| Logic | Yes | -- | Polish |
-| Figures | Yes | journal template | -- |
-| Experiment | Yes | expression-patterns | -- |
-| Abstract | Yes | expression-patterns, journal template | Polish |
-| Cover Letter | Yes | journal template | -- |
-| Lit Review | Yes (uses Semantic Scholar MCP) | -- | -- |
-| Visualization | Yes | -- | Experiment |
-
-**Every Skill must be usable standalone.** Chaining is a user workflow choice, never a technical dependency. A user can invoke `/paper-deai` without having run `/paper-polish` first.
-
-## Data Flow
-
-### How Skills Access Shared Resources
+## System Overview: v2.0 Delta
 
 ```
-User invokes /paper-polish
+EXISTING (unchanged)                    NEW / MODIFIED
+============================            ============================
+
+.claude/skills/                         .claude/skills/
+  abstract-skill/SKILL.md                 repo-to-paper-skill/SKILL.md  [NEW]
+  caption-skill/SKILL.md
+  cover-letter-skill/SKILL.md
+  de-ai-skill/SKILL.md
+  experiment-skill/SKILL.md
+  literature-skill/SKILL.md
+  logic-skill/SKILL.md
+  polish-skill/SKILL.md               >> polish-skill/SKILL.md      [MODIFIED: bilingual output]
+  reviewer-simulation-skill/SKILL.md
+  translation-skill/SKILL.md          >> translation-skill/SKILL.md  [MINOR: verify bilingual pattern]
+  visualization-skill/SKILL.md
+
+references/                             references/
+  expression-patterns.md                  (unchanged)
+  expression-patterns/*.md                (unchanged)
+  anti-ai-patterns.md                     (unchanged)
+  anti-ai-patterns/*.md                   (unchanged)
+  journals/ceus.md                        (unchanged)
+  skill-conventions.md                    (unchanged)
+  skill-skeleton.md                       (unchanged)
+
+paper-polish-workflow/                  paper-polish-workflow/
+  SKILL.md                             >> SKILL.md                   [MODIFIED: AskUserQuestion fix]
+
+                                        [USER PROJECT]/
+                                          .paper-refs/               [NEW: output directory]
+                                            {topic}-refs.md          [NEW: literature metadata files]
+```
+
+## Component Responsibilities
+
+| Component | Type | Status | Responsibility |
+|-----------|------|--------|---------------|
+| `repo-to-paper-skill` | New Skill | NEW | Scan arbitrary repo, generate structured paper draft via top-down H1-H2-H3-body workflow with user checkpoints |
+| `polish-skill` | Existing Skill | MODIFY | Add bilingual paragraph-by-paragraph comparison output option |
+| `translation-skill` | Existing Skill | VERIFY | Already has bilingual `_bilingual.tex` output; verify pattern matches v2.0 standard |
+| `paper-polish-workflow` | Legacy Skill | MODIFY | Fix AskUserQuestion prompt engineering to use structured tool instead of plain dialogue |
+| `.paper-refs/` | Output convention | NEW | Directory convention for literature metadata files saved during repo-to-paper execution |
+| `references/` | Shared library | UNCHANGED | No new reference files needed in the shared library |
+
+## Feature 1: Repo-to-Paper Skill
+
+### Architecture Decision: Single New Skill (Not Orchestrator)
+
+The repo-to-paper Skill is a new standalone Skill, not an orchestrator that chains existing Skills. Rationale:
+
+- **Literature search integration** within the Skill calls Semantic Scholar MCP directly (same pattern as `literature-skill`) rather than invoking `literature-skill` as a sub-Skill, because: (a) Claude Code does not reliably support Skill-calling-Skill, (b) the repo-to-paper context (H2-level sections) is needed for targeted queries, and (c) the output format (saved ref files with abstracts) differs from `literature-skill`'s interactive BibTeX workflow.
+- **Expression patterns** are loaded the same way all other Skills load them -- via the stable-entrypoint-plus-leaf-module architecture.
+- **The Skill is independently invokable.** Users can trigger it without having run any other Skill first.
+
+### Data Flow: Repo Scan to Paper Draft
+
+```
+User provides: repo path (or current repo) + target journal + paper topic
     |
     v
-Claude loads paper-polish/SKILL.md
+Step 0: MCP Pre-flight (Semantic Scholar)
+    |  Confirm MCP availability before starting multi-phase workflow.
+    |  If unavailable: warn, proceed without literature (use placeholders).
     |
     v
-SKILL.md instructs: "Read references/journals/{journal}.md for journal requirements"
+Step 1: Repo Scan  [tools: Glob, Grep, Read]
+    |  Glob for code files, configs, READMEs, notebooks
+    |  Grep for key patterns (model names, dataset names, evaluation metrics)
+    |  Read key files (README, main scripts, config files, result files)
+    |  Output: Repo Understanding Document (internal, not shown to user)
     |
     v
-Claude uses Read tool on references/journals/ceus.md
+Step 2: H1 Structure  [user checkpoint]
+    |  Propose top-level paper sections based on repo analysis
+    |  Default: Introduction / Related Work / Methods / Experiments / Discussion / Conclusion
+    |  User confirms or adjusts H1 structure
     |
     v
-SKILL.md instructs: "Consult references/expression-patterns.md for academic phrases"
+Step 3: H2 Structure + Literature  [user checkpoint]
+    |  For each H1 section, propose H2 subsections
+    |  Call Semantic Scholar MCP for each H2 topic:
+    |    - mcp__semantic-scholar__papers-search-basic for each subsection theme
+    |    - mcp__semantic-scholar__get-paper-abstract for top hits
+    |  Save literature metadata to .paper-refs/{section}-refs.md
+    |  Present H2 structure with associated references to user
+    |  User confirms or adjusts
     |
     v
-Claude uses Read tool on references/expression-patterns.md
+Step 4: H3 Structure  [user checkpoint]
+    |  For each H2 subsection, propose H3 paragraphs/points
+    |  Map repo artifacts (code, results, configs) to specific H3 points
+    |  User confirms or adjusts
     |
     v
-Claude executes polishing workflow with loaded context
-```
-
-**Key principle: Progressive disclosure.** SKILL.md contains only the workflow logic and pointers to reference files. Claude loads reference files only when needed, conserving context window tokens.
-
-### How Journal Templates Flow
-
-```
-references/journals/ceus.md
+Step 5: Body Generation  [per-section, with expression patterns]
+    |  Load appropriate expression-patterns leaf for each section
+    |  Load anti-ai-patterns for vocabulary screening
+    |  Load journal template if specified
+    |  Generate body text section by section
+    |  Use [CITE: author2024keyword] placeholders linked to saved refs
+    |  Use [TODO: ...] for content the Skill cannot determine from repo
+    |  Bilingual output: English body + Chinese comment lines (same as translation-skill)
     |
-    +-- Read by: paper-polish (style check step)
-    +-- Read by: paper-translate (formatting step)
-    +-- Read by: paper-review (journal-specific criteria)
-    +-- Read by: paper-abstract (word limits, highlight format)
-    +-- Read by: paper-coverletter (journal-specific requirements)
-    +-- Read by: paper-figures (caption format requirements)
+    v
+Step 6: Output  [tools: Write]
+    |  Write draft to {topic}_draft.tex (English) and {topic}_draft_bilingual.tex
+    |  Write literature ref files to .paper-refs/
+    |  Present summary: section count, ref count, TODO count
 ```
 
-Each journal template is read by multiple Skills but owned by no single Skill. This is the shared resource pattern.
+### Repo Scan Strategy
 
-### How Expression Patterns Flow
-
-```
-references/expression-patterns.md
-    |
-    +-- Read by: paper-polish (expression options in Step 3)
-    +-- Read by: paper-translate (target expression style)
-    +-- Read by: paper-deai (human-sounding alternatives)
-    +-- Read by: paper-experiment (results presentation)
-    +-- Read by: paper-abstract (abstract phrasing)
-```
-
-### User Workflow: Typical Paper Lifecycle
+The Skill must handle arbitrary repositories without assuming a specific language, framework, or structure. The scan strategy uses progressive discovery:
 
 ```
-1. /paper-translate   (draft Chinese -> English)
-2. /paper-polish      (structure -> logic -> expression)
-3. /paper-deai        (reduce AI artifacts)
-4. /paper-logic       (verify cross-section consistency)
-5. /paper-figures     (optimize captions)
-6. /paper-experiment  (strengthen discussion)
-7. /paper-review      (self-review before submission)
-8. /paper-abstract    (finalize abstract)
-9. /paper-coverletter (generate cover letter)
+Priority 1: README.md, README.rst, README.txt
+    -> Extract project description, key claims, usage examples
+
+Priority 2: Configuration files
+    -> Glob for: *.yaml, *.yml, *.toml, *.json, *.cfg, *.ini
+    -> Extract: model names, hyperparameters, dataset paths, experiment configs
+
+Priority 3: Main code files
+    -> Glob for: main.py, train.py, run.py, app.py, index.*, src/**/*
+    -> Grep for: class names, function signatures, import statements
+    -> Extract: architecture names, library dependencies, pipeline structure
+
+Priority 4: Results and evaluation
+    -> Glob for: results/, outputs/, logs/, *.csv, *.log
+    -> Grep for: accuracy, F1, loss, RMSE, R2, AUC, precision, recall
+    -> Extract: metric names, values, comparison baselines
+
+Priority 5: Documentation and notebooks
+    -> Glob for: docs/**, *.ipynb, *.md (non-README)
+    -> Extract: explanations, visualizations, experiment narratives
 ```
 
-This is a recommended order, not an enforced one. Users can enter at any step.
+**Context budget discipline:** The Skill must not read entire large files. Strategy:
+- README: read fully (typically < 500 lines)
+- Config files: read fully (typically < 200 lines)
+- Code files: read first 100 lines for imports/structure, then Grep for specific patterns
+- Result files: read first 50 lines for headers and sample data
+- Total context target: keep repo scan under ~3000 lines of loaded content
 
-## Patterns to Follow
+### Literature Reference File Format
 
-### Pattern 1: Shared Resource Reference via Read Tool
+Literature metadata files saved during H2 stage use a consistent format. These are NOT placed in the shared `references/` library (which is project-owned, not user-paper-owned). They go into a `.paper-refs/` directory within the user's working context.
 
-**What:** Each SKILL.md references shared resources using explicit Read instructions, not embedded content.
-
-**When:** Always, for any content shared between 2+ Skills.
-
-**Example in SKILL.md:**
 ```markdown
-## Journal-Specific Requirements
+# Literature References: {Section Title}
 
-Before polishing, read the target journal's requirements:
+**Generated:** {date}
+**Query:** {Semantic Scholar search query}
 
-1. Ask the user which journal they are targeting
-2. Read the journal template: `references/journals/{journal-name}.md`
-3. Apply word limits, style rules, and format requirements from the template
+## Ref 1: {Author et al., Year}
 
-Currently supported journals:
-- **CEUS**: `references/journals/ceus.md`
-- **IJGIS**: `references/journals/ijgis.md`
-- **Cities**: `references/journals/cities.md`
+**Title:** {Full title from MCP}
+**Authors:** {Author list from MCP}
+**Year:** {Year}
+**Citation Count:** {Count from MCP}
+**Abstract:** {Abstract from MCP}
+**Relevance:** {1-sentence explanation of why this paper relates to the section}
+
+**BibTeX:**
+```bibtex
+@article{key,
+  title = {...},
+  author = {...},
+  ...
+}
 ```
 
-**Why:** Keeps SKILL.md under 500 lines. Ensures journal templates are maintained in one place. New journals only need a new file in `references/journals/`, no Skill modifications.
+## Ref 2: ...
+```
 
-### Pattern 2: Bilingual Trigger Descriptions
+**Design rationale for .paper-refs/ location:**
+- `references/` is reserved for the project's shared reference library (expression patterns, anti-AI patterns, journal templates). It is version-controlled and maintained across all users.
+- `.paper-refs/` contains per-paper, per-session literature artifacts. It is user-generated output, not a shared resource.
+- The Skill instructs users to add `.paper-refs/` to `.gitignore` if they do not want to track these files.
+- Other Skills (experiment-skill, abstract-skill) can Read these files if the user asks to connect literature.
 
-**What:** Every SKILL.md frontmatter includes both English and Chinese trigger keywords in the description field.
+### Integration with Existing References
 
-**When:** Always, because the target user works in both languages.
+| Reference | How Repo-to-Paper Uses It | When Loaded |
+|-----------|---------------------------|-------------|
+| `expression-patterns.md` (overview) | Orient which leaf to load per section | Step 5 start |
+| `expression-patterns/introduction-and-gap.md` | Introduction body generation | Step 5 for Introduction |
+| `expression-patterns/methods-and-data.md` | Methods body generation | Step 5 for Methods |
+| `expression-patterns/results-and-discussion.md` | Results and Discussion body | Step 5 for Results/Discussion |
+| `expression-patterns/conclusions-and-claims.md` | Conclusion body generation | Step 5 for Conclusion |
+| `expression-patterns/geography-domain.md` | When repo involves spatial/urban topics | Step 5 conditional |
+| `anti-ai-patterns.md` | Overview for vocabulary screening | Step 5 |
+| `anti-ai-patterns/vocabulary.md` | Screen generated body text | Step 5 post-generation |
+| `journals/ceus.md` | Journal style and structure constraints | Steps 2-5 when journal specified |
 
-**Example:**
+### Frontmatter Design
+
 ```yaml
 ---
-name: paper-polish
-description: Systematic workflow for polishing academic paper sections. Top-down approach from structure to logic to expression. Triggers: polish paper, revise paper, improve writing, 润色论文, 精修论文, 改善论文表达
+name: repo-to-paper-skill
+description: >-
+  Generate structured paper draft from code repository.
+  Top-down H1-H2-H3-body workflow with user checkpoints at each level.
+  Integrates Semantic Scholar for literature at H2 stage.
+  Triggers: "generate paper from repo", "write paper from code",
+  "从代码仓库生成论文", "帮我从项目代码写论文草稿".
+triggers:
+  primary_intent: generate paper draft from code repository
+  examples:
+    - "Generate a paper draft from this repo"
+    - "从这个代码仓库生成论文草稿"
+    - "Write a paper based on my experiment code"
+    - "帮我从项目代码写论文"
+    - "Draft a CEUS paper from my urban analysis repo"
+    - "把我的实验代码整理成论文"
+tools:
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - External MCP
+  - Structured Interaction
+references:
+  required:
+    - references/expression-patterns.md
+  leaf_hints:
+    - references/expression-patterns/introduction-and-gap.md
+    - references/expression-patterns/methods-and-data.md
+    - references/expression-patterns/results-and-discussion.md
+    - references/expression-patterns/conclusions-and-claims.md
+    - references/expression-patterns/geography-domain.md
+    - references/anti-ai-patterns.md
+    - references/anti-ai-patterns/vocabulary.md
+input_modes:
+  - repo_path
+  - current_directory
+output_contract:
+  - draft_tex
+  - bilingual_draft_tex
+  - literature_refs
 ---
 ```
 
-**Why:** Claude uses the description to decide when to activate a Skill. Without Chinese triggers, the Skill won't activate for Chinese-language requests. The official docs confirm that description quality directly impacts activation rates (20% to 90% improvement with good descriptions).
+**Notable frontmatter choices:**
+- `tools` includes `Glob` and `Grep` -- first Skill in the suite to require these for repo scanning. All other Skills use only Read/Write/Edit.
+- `tools` includes `External MCP` following the convention fix identified in v1.0 tech debt (not "Semantic Scholar MCP").
+- `input_modes` introduces `repo_path` and `current_directory` -- new input modes not used by any v1.0 Skill.
+- `references.required` includes only `expression-patterns.md` (same as translation, polish, experiment Skills). Literature references are generated at runtime, not pre-loaded.
 
-### Pattern 3: Interactive Selection via AskUserQuestion
+## Feature 2: Bilingual Paragraph-by-Paragraph Output
 
-**What:** Use `AskUserQuestion` (Claude Code's interactive question tool) for multi-option expression selection instead of text-based menus.
+### Existing Patterns Audit
 
-**When:** Whenever presenting 2-4 alternatives for user selection (expression options, transition words, structure choices).
+The codebase has two distinct bilingual output patterns:
 
-**Example in SKILL.md:**
+**Pattern A: Inline Blockquote (reviewer-simulation-skill, logic-skill)**
 ```markdown
-### Expression Selection
+**Problem:** [English description]
+**Why this matters:** [English impact]
+**Suggestion:** [English guidance]
 
-For each sentence, provide 2-4 expression options using the AskUserQuestion tool:
-- Present the sentence's logical function as the question
-- Each option is a complete rewritten sentence
-- Always include a "Keep original" option
-- Allow custom text input
+> **[Chinese]** [Chinese translation of all three parts]
+```
+- Used for: structured analysis output (concerns, issues)
+- Granularity: per-concern/per-issue
+- Language: Chinese follows English immediately, as blockquote
 
-Process 3-5 sentences per batch for efficiency.
+**Pattern B: LaTeX Comment Comparison (translation-skill)**
+```latex
+% --- Paragraph N ---
+% [Chinese original text line 1]
+% [Chinese original text line 2]
+English translated text for paragraph N.
+```
+- Used for: full body text output
+- Granularity: per-paragraph
+- Language: Chinese precedes English, as LaTeX comments
+
+### Recommended v2.0 Bilingual Standard
+
+**Use Pattern B (LaTeX comment comparison) for all body text output across Skills.** This is the correct pattern for paragraph-by-paragraph comparison because:
+
+1. It produces compilable LaTeX -- Chinese text is comments, English text is body.
+2. Paragraph markers (`% --- Paragraph N ---`) make alignment unambiguous.
+3. The user can toggle bilingual visibility by searching for/removing comment lines.
+4. Translation-skill already implements this pattern, so it becomes the canonical example.
+
+**Use Pattern A (inline blockquote) for analysis/review output.** This remains correct for reviewer-simulation-skill and logic-skill because their output is structured Markdown reports, not LaTeX body text.
+
+### Skills Requiring Changes
+
+| Skill | Current Bilingual | v2.0 Change | Effort |
+|-------|-------------------|-------------|--------|
+| `translation-skill` | Pattern B in `_bilingual.tex` | None -- already canonical | NONE |
+| `polish-skill` | None -- produces in-place edits only | Add optional bilingual comparison output when user requests it | LOW |
+| `repo-to-paper-skill` | N/A (new) | Implement Pattern B from the start | MEDIUM (built into new Skill) |
+| `reviewer-simulation-skill` | Pattern A (inline blockquote) | None -- Pattern A is correct for analysis output | NONE |
+| `logic-skill` | Pattern A (inline blockquote) | None -- Pattern A is correct for analysis output | NONE |
+| `experiment-skill` | None | Not in v2.0 scope | NONE |
+
+### Polish-Skill Bilingual Extension
+
+The polish-skill currently produces in-place edits with `% [Polish] Original:` annotations. For v2.0, add an optional bilingual comparison output mode:
+
+**Trigger:** User explicitly requests bilingual output ("polish with bilingual comparison", "润色并生成中英对照").
+
+**Implementation:** After polishing is complete, if bilingual was requested:
+1. Read the original text (preserved in `% [Polish] Original:` annotations)
+2. Generate a `_bilingual.tex` companion file using Pattern B:
+   ```latex
+   % --- Paragraph N ---
+   % [Original English text before polishing]
+   [Polished English text for paragraph N]
+   ```
+3. This is Original-vs-Polished comparison, not Chinese-vs-English.
+
+**Note:** This is a different use case from translation-skill's bilingual (Chinese source vs. English translation). The polish-skill bilingual shows Before vs. After in English. The same LaTeX comment format works for both -- the pattern is structurally identical.
+
+### Repo-to-Paper Bilingual Implementation
+
+Since repo-to-paper generates English body text while the user likely thinks in Chinese, the bilingual output serves as a comprehension aid:
+
+```latex
+% --- Paragraph N ---
+% [Chinese explanation of what this paragraph says]
+% [This is generated Chinese, not source Chinese]
+English body text for paragraph N.
 ```
 
-**Why:** Reduces conversation turns, provides cleaner UX than text-based selection, and the user can always type a custom answer.
+**Key difference from translation-skill:** In translation-skill, the Chinese lines are the user's original input (preserved verbatim). In repo-to-paper-skill, the Chinese lines are generated alongside the English (parallel generation). The Skill must clearly label this distinction in the output header:
 
-### Pattern 4: Journal Template Structure (Extensibility Pattern)
-
-**What:** Every journal template follows an identical structure so Skills can parse them predictably.
-
-**When:** Creating any new journal template in `references/journals/`.
-
-**Example template structure:**
-```markdown
-# [Journal Name] ([Abbreviation])
-
-## Journal Requirements
-
-| Requirement | Specification |
-|-------------|---------------|
-| Total word limit | [number] words |
-| Abstract | [limit] words |
-| Highlights | [count] items, each [char limit] characters |
-| Review type | [blind type] |
-
-## Word Budget
-
-| Section | Suggested Words |
-|---------|-----------------|
-| Abstract | [range] |
-| Introduction | [range] |
-| [etc.] | [etc.] |
-
-## Style Checklist
-
-- [ ] [Journal-specific requirement 1]
-- [ ] [Journal-specific requirement 2]
-
-## Highlights Format (if applicable)
-
-### Rules
-- [Rule 1]
-- [Rule 2]
-
-### Examples
-| # | Highlight | Characters | Status |
-|---|-----------|------------|--------|
-| 1 | [example] | [count] | [ok/over] |
+```latex
+% Bilingual draft: English body + Chinese comprehension aid
+% Note: Chinese text is AI-generated for comprehension, not user-authored source material
 ```
 
-**Why:** Predictable structure means Skills can reference "the Word Budget section of the journal template" and reliably find it. New journals are trivially added by copying this template.
+## Feature 3: AskUserQuestion Fix
+
+### Problem Analysis
+
+The legacy `paper-polish-workflow/SKILL.md` (located at `paper-polish-workflow/SKILL.md`, outside `.claude/skills/`) uses vendor-specific tool names (`mcp_question`, `mcp_read`, `mcp_write`, `mcp_edit`, `mcp_look_at`) that do not match Claude Code's actual tool names. The result: Claude falls back to plain dialogue instead of using AskUserQuestion for structured multi-option selection.
+
+**Root cause:** The SKILL.md was written before the v1.0 convention system was established. It references `mcp_question` (an MCP tool name from a different context) instead of `AskUserQuestion` (Claude Code's built-in structured interaction tool).
+
+### Fix Strategy
+
+The fix is purely prompt engineering -- rewrite the paper-polish-workflow SKILL.md to:
+
+1. Replace all `mcp_question` references with `AskUserQuestion` (Claude Code's actual tool name).
+2. Replace `mcp_read`, `mcp_write`, `mcp_edit`, `mcp_look_at` with `Read`, `Write`, `Edit` (Claude Code tool names).
+3. Add explicit instructions that match the v1.0 convention for Structured Interaction:
+   - "Use AskUserQuestion to present multi-option selections"
+   - "When AskUserQuestion is unavailable, fall back to plain-text numbered lists"
+4. Optionally: bring the SKILL.md into compliance with v1.0 `skill-conventions.md` (YAML frontmatter, body structure, line budget).
+
+### Scope Decision: Fix vs. Full Rewrite
+
+The paper-polish-workflow SKILL.md (349 lines) is a legacy artifact that predates the v1.0 convention system. Two options:
+
+**Option A: Minimal fix (recommended for v2.0).** Replace tool names, add AskUserQuestion instructions. Keep the existing workflow structure. This is a 30-minute task that directly solves the user's reported problem.
+
+**Option B: Full convention rewrite.** Rewrite the entire SKILL.md to match `skill-conventions.md` format (YAML frontmatter, standard body sections, line budget). This is a 2-hour task that improves consistency but does not add functional value -- the polish-skill already exists as the convention-compliant replacement.
+
+**Recommendation: Option A.** The paper-polish-workflow SKILL.md is a separate entry point (lives outside `.claude/skills/`) with a different interaction philosophy (sentence-by-sentence confirmation vs. polish-skill's quick-fix/guided modes). A full rewrite would risk losing its distinctive interactive workflow. Fix the tool names and add explicit AskUserQuestion instructions.
+
+### Files Modified
+
+| File | Change | Lines Affected |
+|------|--------|---------------|
+| `paper-polish-workflow/SKILL.md` | Replace `mcp_question` with `AskUserQuestion` | ~10 occurrences |
+| `paper-polish-workflow/SKILL.md` | Replace `mcp_read/write/edit/look_at` with `Read/Write/Edit` | ~6 occurrences |
+| `paper-polish-workflow/SKILL.md` | Add Structured Interaction fallback note | +5 lines |
+
+## Architectural Patterns
+
+### Pattern 1: Top-Down Generation with User Checkpoints
+
+**What:** Generate structured output by progressively refining from H1 (coarse structure) to body text (fine detail), with explicit user confirmation gates between each level.
+
+**When to use:** Any Skill that generates substantial structured text where the user needs to approve direction before details are committed. Used by: repo-to-paper-skill (new), experiment-skill (existing two-phase pattern).
+
+**Trade-offs:**
+- Pro: User catches structural mistakes early, before body text is wasted
+- Pro: Each checkpoint is a natural save point
+- Con: More interaction turns than a single-pass Skill
+- Con: Multi-turn state must be maintained across checkpoints
+
+**Pattern in SKILL.md:**
+```markdown
+### Step N: [Level] Structure  [user checkpoint]
+- Generate [level] structure from [previous level + repo data]
+- Present structure to user with numbered items
+- Wait for user confirmation: "Confirm, adjust, or add items"
+- Apply user adjustments before proceeding to next level
+```
+
+### Pattern 2: MCP-Driven Literature at Structure Stage
+
+**What:** Call Semantic Scholar MCP during structure generation (H2 stage) rather than during body generation. Save results as ref files for later use during body writing.
+
+**When to use:** Repo-to-paper-skill. Not applicable to existing Skills (literature-skill is interactive, not structure-driven).
+
+**Trade-offs:**
+- Pro: Literature informs structure decisions (user sees which subtopics have strong prior work)
+- Pro: Ref files are reusable across body generation iterations
+- Con: MCP calls add latency at H2 stage
+- Con: Ref files may include irrelevant papers if H2 structure changes after literature fetch
+
+**Implementation detail:** If MCP is unavailable (pre-flight fails), the Skill must NOT block. Proceed with `[LITERATURE NEEDED: topic]` placeholders in the structure and `[CITE: PLACEHOLDER]` in body text. The user can later invoke `literature-skill` independently to fill these.
+
+### Pattern 3: Bilingual LaTeX Comment Comparison
+
+**What:** Produce parallel bilingual output where one language is LaTeX comments and the other is body text, with paragraph markers for alignment.
+
+**When to use:** Any Skill producing full body text that serves bilingual users. Already used by translation-skill; extended to polish-skill and repo-to-paper-skill in v2.0.
+
+**Format specification:**
+```latex
+% ============================================================
+% Bilingual output: [source language] in comments, [target language] as body
+% Generated by: [skill-name]
+% Date: [date]
+% ============================================================
+
+% --- Paragraph 1 ---
+% [Source/comparison language line 1]
+% [Source/comparison language line 2]
+[Target language paragraph 1 body text.]
+
+% --- Paragraph 2 ---
+% [Source/comparison language line 1]
+[Target language paragraph 2 body text.]
+```
+
+### Pattern 4: Progressive Repo Discovery
+
+**What:** Scan an arbitrary repository using a priority-ordered file discovery strategy (README > configs > code > results > docs) with context budget limits per category.
+
+**When to use:** Repo-to-paper-skill only.
+
+**Trade-offs:**
+- Pro: Works on any repository regardless of language or framework
+- Pro: Context budget prevents overloading on large monorepos
+- Con: May miss important files in unconventional repo structures
+- Con: Limited understanding of code semantics (reads structure, not logic)
+
+**Mitigation:** At the H1 checkpoint, the Skill presents its understanding of the repo and asks the user to correct any misunderstandings. This catches scan failures early.
 
 ## Anti-Patterns to Avoid
 
-### Anti-Pattern 1: Embedding Reference Content in SKILL.md
+### Anti-Pattern 1: Skill-Calling-Skill for Literature
 
-**What:** Putting expression patterns, journal requirements, or other shared content directly in SKILL.md.
+**What people might do:** Have repo-to-paper-skill invoke literature-skill as a sub-Skill for reference searching.
 
-**Why bad:** Exceeds the 500-line limit. Creates duplication across Skills. Updates require editing multiple files. Wastes context window tokens when the content isn't needed for the current step.
+**Why it's wrong:** Claude Code does not reliably support Skill chaining. The sub-Skill invocation would lose the repo-to-paper context (which H2 section needs references), and the interactive selection flow of literature-skill (numbered list, user picks one) does not fit the batch search pattern needed during H2 structure generation.
 
-**Instead:** Keep SKILL.md focused on workflow logic. Reference shared files with explicit Read instructions.
+**Do this instead:** Call `mcp__semantic-scholar__papers-search-basic` directly within repo-to-paper-skill. Implement a non-interactive batch search pattern (top 3 results per H2 topic, auto-selected by relevance, no user selection required). Save results to .paper-refs/ files.
 
-### Anti-Pattern 2: Skills That Depend on Other Skills' Output
+### Anti-Pattern 2: Putting Generated Literature Refs in references/
 
-**What:** Building Skills that require specific output format from a previous Skill (e.g., De-AI Skill expects a `*_polished.md` file from Polish Skill).
+**What people might do:** Save literature metadata files into `references/` alongside expression-patterns and anti-ai-patterns.
 
-**Why bad:** Creates hidden coupling. Users can't use De-AI on text they wrote themselves or polished with a different tool. Breaks the "every Skill is standalone" principle.
+**Why it's wrong:** The `references/` directory is the project's shared, version-controlled reference library. Literature refs are user-generated, paper-specific, session-specific output. Mixing them would pollute the shared library and create merge conflicts for users who track `references/` in git.
 
-**Instead:** Each Skill should accept any input text. Ask the user what file or text to work on. Don't assume a prior Skill has run.
+**Do this instead:** Use a separate `.paper-refs/` directory convention. Add it to `.gitignore` by default.
 
-### Anti-Pattern 3: Overly Complex Routing in a Single Skill
+### Anti-Pattern 3: Generating Chinese by Translating English
 
-**What:** A "paper-assistant" master Skill that tries to detect intent and route to sub-workflows.
+**What people might do:** In repo-to-paper bilingual mode, generate English body first, then translate to Chinese for the comment lines.
 
-**Why bad:** Claude Code already has Skill discovery via descriptions. Adding a routing layer duplicates this and adds a failure mode. The master Skill would need to load all sub-workflows into context, defeating progressive disclosure.
+**Why it's wrong:** Two-pass generation (English then translate) doubles the generation cost and introduces translation artifacts. The Chinese comprehension aid does not need to be a faithful translation -- it needs to be a clear Chinese explanation of the paragraph's purpose.
 
-**Instead:** Trust Claude's built-in Skill activation. Write specific descriptions for each Skill so Claude selects the right one.
+**Do this instead:** Generate English and Chinese in parallel (same generation pass). The Chinese lines are comprehension summaries, not word-for-word translations. This is cheaper and more useful.
 
-### Anti-Pattern 4: Deeply Nested Reference Files
+### Anti-Pattern 4: Full Convention Rewrite of Legacy SKILL.md
 
-**What:** SKILL.md references `docs/advanced.md`, which references `docs/details/specifics.md`.
+**What people might do:** Rewrite paper-polish-workflow/SKILL.md from scratch to match skill-conventions.md.
 
-**Why bad:** Official best practices explicitly warn against this. Claude may partially read nested files (using `head -100`), resulting in incomplete information.
+**Why it's wrong:** The legacy SKILL.md has a distinct interaction philosophy (sentence-by-sentence confirmation with mcp_question batches) that differs from polish-skill's quick-fix/guided modes. A full rewrite risks losing this workflow in an attempt to achieve format compliance. The user's reported problem is specifically about AskUserQuestion not being called -- not about the workflow design.
 
-**Instead:** Keep all references one level deep from SKILL.md. SKILL.md points directly to every file it might need.
+**Do this instead:** Targeted tool name replacement + AskUserQuestion instruction addition. Preserve the existing workflow structure.
 
-## Scalability Considerations
+## Integration Points
 
-| Concern | At 5 Skills | At 10+ Skills | At 20+ Skills |
-|---------|-------------|---------------|---------------|
-| Context budget for descriptions | No concern (~2.5K chars) | Approaching budget (~5K chars) | May hit 16K char budget; optimize descriptions |
-| Reference file size | Small, fast to load | Consider splitting expression-patterns by section type | Split into domain-specific files |
-| Journal templates | 1-2 journals | 3-5 journals, still manageable | Index file listing available journals may help |
-| User discoverability | Users remember Skill names | Need clear naming convention | Consider a "paper-help" meta-Skill listing all available Skills |
+### External Services
 
-### Context Budget Note
+| Service | Integration Pattern | Skills Using It | Notes |
+|---------|---------------------|-----------------|-------|
+| Semantic Scholar MCP | `mcp__semantic-scholar__papers-search-basic` and `mcp__semantic-scholar__get-paper-abstract` | literature-skill (v1.0), repo-to-paper-skill (v2.0) | Pre-flight check required; graceful degradation with placeholders |
 
-Claude Code's Skill description budget defaults to 2% of context window (fallback: 16,000 characters). With 11 Skills at ~150 chars per description, total is ~1,650 characters -- well within budget. This architecture supports up to ~100 Skills before hitting the default limit.
+### Internal Boundaries
+
+| Boundary | Communication | Notes |
+|----------|---------------|-------|
+| repo-to-paper-skill <-> expression-patterns | Read tool at runtime | Same pattern as all writing Skills |
+| repo-to-paper-skill <-> .paper-refs/ | Write tool (create), Read tool (consume during body gen) | Skill creates files that it later reads within the same session |
+| repo-to-paper-skill <-> journal templates | Read tool at runtime | Same pattern as translation/polish/abstract Skills |
+| polish-skill <-> bilingual output | New optional output path | Triggered by user request; uses same format as translation-skill |
+| .paper-refs/ <-> other Skills | Manual user action | User can ask experiment-skill or abstract-skill to read .paper-refs/ for literature context |
+
+### Cross-Skill Data Flow (User-Driven)
+
+```
+repo-to-paper-skill
+    |
+    |  generates: {topic}_draft.tex, {topic}_draft_bilingual.tex, .paper-refs/*.md
+    |
+    v
+User decides next step:
+    |
+    +---> polish-skill        (polish the generated draft)
+    +---> de-ai-skill         (screen for AI patterns)
+    +---> logic-skill         (verify argument chains)
+    +---> reviewer-simulation (self-review before refining)
+    +---> experiment-skill    (strengthen results/discussion using .paper-refs/)
+    +---> abstract-skill      (generate abstract from draft)
+```
+
+This is the same "user-driven chaining" pattern from v1.0. No technical coupling between Skills.
 
 ## Suggested Build Order
 
-Based on component dependencies and the shared resource pattern:
-
 ```
-Phase 1: Foundation (must come first)
-  references/expression-patterns.md    -- shared by 5+ Skills
-  references/journals/ceus.md          -- shared by 6+ Skills
-  references/anti-ai-patterns.md       -- shared by 2+ Skills
-  Journal template structure spec      -- defines the contract
+Phase 1: AskUserQuestion Fix
+    paper-polish-workflow/SKILL.md  (tool name replacement)
+    Rationale: Smallest scope, immediate user value, no dependencies,
+    can be completed and tested in isolation.
 
-Phase 2: Core Skills (highest value, most commonly used)
-  paper-polish/SKILL.md                -- redesign from scratch per PROJECT.md
-  paper-translate/SKILL.md             -- translation is the entry point for Chinese researchers
+Phase 2: Bilingual Pattern Standardization
+    Verify translation-skill bilingual output matches the v2.0 standard format.
+    Add bilingual comparison output option to polish-skill.
+    Rationale: Establishes the bilingual pattern before repo-to-paper-skill
+    needs it. polish-skill modification is low-risk (additive, not changing
+    existing behavior).
 
-Phase 3: Quality Skills (build on polishing foundation)
-  paper-deai/SKILL.md                  -- typically runs after polish/translate
-  paper-review/SKILL.md                -- reviewer simulation for self-check
+Phase 3: Repo-to-Paper Skill (Core Structure)
+    Create .claude/skills/repo-to-paper-skill/SKILL.md
+    Implement: frontmatter, repo scan strategy, H1/H2/H3 structure workflow
+    Implement: user checkpoints at each level
+    Rationale: Core Skill structure before literature integration.
+    Can be tested with structure generation only (no literature).
 
-Phase 4: Section-Specific Skills
-  paper-abstract/SKILL.md
-  paper-figures/SKILL.md
-  paper-experiment/SKILL.md
-  paper-logic/SKILL.md
+Phase 4: Repo-to-Paper Literature Integration
+    Add Semantic Scholar MCP integration at H2 stage
+    Implement .paper-refs/ output convention
+    Add literature metadata file format
+    Rationale: Literature integration depends on H2 structure being stable.
+    Separated from Phase 3 to allow testing structure independently.
 
-Phase 5: Support Skills
-  paper-coverletter/SKILL.md
-  paper-litreview/SKILL.md
-  paper-visualize/SKILL.md
-
-Phase 6: Expansion
-  Additional journal templates (ijgis.md, cities.md)
-  Additional expression pattern categories
-  README and installation guide
+Phase 5: Repo-to-Paper Body Generation + Bilingual Output
+    Implement body text generation with expression patterns
+    Implement bilingual output (Pattern B) for generated text
+    Implement anti-AI vocabulary screening
+    Add journal template integration
+    Rationale: Body generation depends on all previous phases --
+    structure (Phase 3), literature refs (Phase 4), bilingual pattern (Phase 2).
 ```
 
-**Build order rationale:**
-1. **References first** because multiple Skills depend on them. Building Skills before references means you'd need to revisit each Skill to add reference links.
-2. **Polish and Translate first** because they are the most-used Skills and the polishing Skill is explicitly flagged for redesign in PROJECT.md.
-3. **De-AI and Review next** because they represent the quality assurance layer that validates polish/translate output.
-4. **Section-specific Skills in parallel** because they are independent of each other.
-5. **Support Skills last** because they add value but aren't core to the polishing workflow.
-6. **Expansion last** because the architecture should be validated with CEUS before adding more journals.
+### Build Order Rationale
+
+1. **AskUserQuestion fix first** because it is zero-risk, zero-dependency, and immediately fixes a user-reported problem. Getting it done early removes it from the critical path.
+
+2. **Bilingual pattern before repo-to-paper** because repo-to-paper will use the bilingual pattern. Establishing and testing the pattern on the existing polish-skill (which is simpler) validates the approach before implementing it in a more complex new Skill.
+
+3. **Repo-to-paper structure before literature** because the H2 section structure determines what literature queries to make. If you build literature integration first, you have nothing to attach it to. Structure can be tested independently by verifying H1/H2/H3 output quality.
+
+4. **Literature as separate phase** because MCP integration has its own failure modes (MCP unavailable, poor search results, rate limits). Isolating it allows the Skill to be functional without literature (using placeholders) while literature integration is refined.
+
+5. **Body generation last** because it consumes outputs from all previous phases (structure, literature, bilingual pattern, expression patterns, anti-AI patterns). It is the final assembly step.
+
+## New vs. Modified Components Summary
+
+| Component | Action | Estimated Effort | Phase |
+|-----------|--------|-----------------|-------|
+| `paper-polish-workflow/SKILL.md` | MODIFY (tool name fix) | ~30 min | 1 |
+| `translation-skill/SKILL.md` | VERIFY (bilingual pattern check) | ~15 min | 2 |
+| `polish-skill/SKILL.md` | MODIFY (add bilingual output option) | ~1 hour | 2 |
+| `.claude/skills/repo-to-paper-skill/SKILL.md` | NEW (core structure) | ~3 hours | 3 |
+| `.claude/skills/repo-to-paper-skill/SKILL.md` | EXTEND (literature integration) | ~2 hours | 4 |
+| `.claude/skills/repo-to-paper-skill/SKILL.md` | EXTEND (body gen + bilingual) | ~3 hours | 5 |
+| `.paper-refs/` convention | NEW (documentation in Skill) | Included in Phase 4 | 4 |
+
+**Total new files:** 1 (repo-to-paper-skill/SKILL.md)
+**Total modified files:** 2 (polish-skill/SKILL.md, paper-polish-workflow/SKILL.md)
+**Total verified files:** 1 (translation-skill/SKILL.md)
+**Reference library changes:** 0
+
+## Skill Conventions Compliance
+
+The new repo-to-paper-skill must comply with all existing conventions from `references/skill-conventions.md`:
+
+| Convention | Compliance Plan |
+|------------|----------------|
+| YAML frontmatter with all required fields | See Frontmatter Design section above |
+| ~300 line budget | Target 280 lines; repo scan strategy goes in Workflow section, not separate reference |
+| 4 interaction modes declared | `guided` (default, H1-H2-H3 checkpoints), `direct` (skip checkpoints, generate all at once) |
+| Body structure (Purpose, Trigger, Modes, References, Ask Strategy, Workflow, Output Contract, Edge Cases, Fallbacks) | Follow skeleton template |
+| References via stable-entrypoint-plus-leaf-module | Load expression-patterns.md overview, then section-specific leaves |
+| Tool names use capability categories | `External MCP` not `Semantic Scholar MCP` |
+| Bilingual triggers in examples | Include both English and Chinese trigger phrases |
+
+### Convention Gaps to Address
+
+The v1.0 conventions do not cover two patterns introduced by repo-to-paper-skill:
+
+1. **`input_modes: repo_path`** -- No existing convention for Skill that takes a directory path as input rather than a file or pasted text. The Ask Strategy must handle: "Provide the path to your repository, or I'll scan the current working directory."
+
+2. **Multi-file output** -- No existing convention for Skills that produce 3+ output files (draft tex, bilingual tex, multiple .paper-refs/ files). The Output Contract section must enumerate all outputs clearly.
+
+These gaps do not require changes to `skill-conventions.md` -- they are documented within the Skill's own body sections as extensions of the existing patterns.
 
 ## Sources
 
-- [Extend Claude with skills - Claude Code Docs](https://code.claude.com/docs/en/skills) (HIGH confidence -- official documentation)
-- [Skill authoring best practices - Claude API Docs](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) (HIGH confidence -- official documentation)
-- [Anthropic Skills Repository](https://github.com/anthropics/skills) (HIGH confidence -- official reference implementations)
-- [Inside Claude Code Skills: Structure, prompts, invocation](https://mikhail.io/2025/10/claude-code-skills/) (MEDIUM confidence -- third-party deep dive, verified against official docs)
-- [awesome-ai-research-writing](https://github.com/Leey21/awesome-ai-research-writing) (MEDIUM confidence -- reference project for prompt design, not architecture)
-- [Claude Skills and CLAUDE.md: a practical 2026 guide for teams](https://www.gend.co/blog/claude-skills-claude-md-guide) (MEDIUM confidence -- community guide)
+- Existing codebase analysis (HIGH confidence -- direct reading of all 11 SKILL.md files, skill-conventions.md, skill-skeleton.md, and all reference files)
+- v1.0 architecture research at `.planning/research/ARCHITECTURE.md` (HIGH confidence -- verified against actual implementation)
+- Claude Code Skill documentation patterns from v1.0 research sources (HIGH confidence -- already validated by v1.0 implementation)
+
+---
+*Architecture research for: v2.0 Repo-to-Paper, Bilingual Enhancement, AskUserQuestion Fix*
+*Researched: 2026-03-17*
