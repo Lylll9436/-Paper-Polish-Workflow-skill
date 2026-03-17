@@ -98,6 +98,7 @@ Describe when the Skill activates and list example invocations.
 - Never ask more than 3 questions before producing initial output.
 - In `direct` mode, skip pre-questions if the user provided enough context.
 - Use structured interaction when available; fall back to plain-text questions otherwise.
+- See `skill-conventions.md > AskUserQuestion Enforcement` for when to use `AskUserQuestion` vs plain text.
 
 ## Workflow
 
@@ -130,6 +131,8 @@ Describe when the Skill activates and list example invocations.
 | Polished text | Markdown or LaTeX | Always produced |
 | Word count | Integer | Always reported |
 | Journal compliance notes | Bullet list | When a target journal is specified |
+
+> **Bilingual eligibility:** If this Skill's `output_contract` produces academic text, it must support bilingual paragraph-by-paragraph comparison (ON by default). See `skill-conventions.md > Bilingual Output Eligibility` for the full classification.
 
 ## Edge Cases
 
