@@ -115,6 +115,16 @@ This Skill translates Chinese academic drafts into polished English text ready f
 
 ## Workflow
 
+### Step 0: Workflow Memory Check
+
+- Read `.planning/workflow-memory.json`. If file missing or empty, skip to Step 1.
+- Check if the last 1-2 log entries form a recognized pattern with `translation-skill` that has appeared >= threshold times in the log. See `skill-conventions.md > Workflow Memory > Pattern Detection` for the full algorithm.
+- If a pattern is found, present recommendation via AskUserQuestion:
+  - Question: "检测到常用流程：[pattern]（已出现 N 次）。是否直接以 direct 模式运行 translation-skill？"
+  - Options: "Yes, proceed" / "No, continue normally"
+- If user accepts: set mode to `direct`, skip Ask Strategy questions.
+- If user declines or AskUserQuestion unavailable: continue in normal mode.
+
 ### Step 1: Collect Context
 
 - Ask pre-questions per Ask Strategy (target journal, glossary, section type).
@@ -124,6 +134,7 @@ This Skill translates Chinese academic drafts into polished English text ready f
 - Detect section type from input content and load the appropriate expression pattern leaf module.
 - If content involves geography/urban/spatial topics: also load `geography-domain.md`.
 - Load `references/anti-ai-patterns.md` for vocabulary screening.
+- **Record workflow:** Append `{"skill": "translation-skill", "ts": "<ISO timestamp>"}` to `.planning/workflow-memory.json`. Create file as `[]` if missing. Drop oldest entry if log length >= 50.
 
 ### Step 2: Translate
 

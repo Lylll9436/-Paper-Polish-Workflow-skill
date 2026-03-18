@@ -90,6 +90,16 @@ The Skill needs four inputs. If already provided in trigger or paper content, sk
 
 ## Workflow
 
+### Step 0: Workflow Memory Check
+
+- Read `.planning/workflow-memory.json`. If file missing or empty, skip to Step 1.
+- Check if the last 1-2 log entries form a recognized pattern with `cover-letter-skill` that has appeared >= threshold times in the log. See `skill-conventions.md > Workflow Memory > Pattern Detection` for the full algorithm.
+- If a pattern is found, present recommendation via AskUserQuestion:
+  - Question: "检测到常用流程：[pattern]（已出现 N 次）。是否直接以 direct 模式运行 cover-letter-skill？"
+  - Options: "Yes, proceed" / "No, continue normally"
+- If user accepts: set mode to `direct`, skip Ask Strategy questions.
+- If user declines or AskUserQuestion unavailable: continue in normal mode.
+
 ### Step 1: Collect Context
 
 - Run Ask Strategy for any missing inputs (journal, paper, author details, data availability).
@@ -97,6 +107,7 @@ The Skill needs four inputs. If already provided in trigger or paper content, sk
 - If paper provided as file: use Read tool to load it; extract title and key contribution.
 - If paper provided as pasted text: extract title and key contribution from the pasted content.
 - Extract Aims & Scope section from the loaded journal template (contribution statement references this directly).
+- **Record workflow:** Append `{"skill": "cover-letter-skill", "ts": "<ISO timestamp>"}` to `.planning/workflow-memory.json`. Create file as `[]` if missing. Drop oldest entry if log length >= 50.
 
 ### Step 2: Draft Letter
 

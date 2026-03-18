@@ -111,6 +111,16 @@ This Skill generates or optimizes academic paper abstracts using the locked 5-se
 
 ## Workflow
 
+### Step 0: Workflow Memory Check
+
+- Read `.planning/workflow-memory.json`. If file missing or empty, skip to Step 1.
+- Check if the last 1-2 log entries form a recognized pattern with `abstract-skill` that has appeared >= threshold times in the log. See `skill-conventions.md > Workflow Memory > Pattern Detection` for the full algorithm.
+- If a pattern is found, present recommendation via AskUserQuestion:
+  - Question: "检测到常用流程：[pattern]（已出现 N 次）。是否直接以 direct 模式运行 abstract-skill？"
+  - Options: "Yes, proceed" / "No, continue normally"
+- If user accepts: set mode to `direct`, skip Ask Strategy questions.
+- If user declines or AskUserQuestion unavailable: continue in normal mode.
+
 ### Step 1: Collect Context
 
 - Load `references/expression-patterns.md` overview.
@@ -118,6 +128,7 @@ This Skill generates or optimizes academic paper abstracts using the locked 5-se
 - Read user input: file via Read tool, or pasted text from conversation.
 - Determine path: restructure if input reads like a formed abstract; generate if raw materials. Ask if ambiguous.
 - **Opt-out check:** Scan the user's trigger prompt for any of these phrases (case-insensitive, exact phrase match): `english only`, `no bilingual`, `only english`, `不要中文`. Store result as `bilingual_mode` (true/false). This flag governs Step 3 output below.
+- **Record workflow:** Append `{"skill": "abstract-skill", "ts": "<ISO timestamp>"}` to `.planning/workflow-memory.json`. Create file as `[]` if missing. Drop oldest entry if log length >= 50.
 
 ### Step 2a: Generate Path (raw content provided)
 

@@ -106,6 +106,16 @@ This Skill simulates peer review of academic papers, producing a structured bili
 
 ## Workflow
 
+### Step 0: Workflow Memory Check
+
+- Read `.planning/workflow-memory.json`. If file missing or empty, skip to Step 1.
+- Check if the last 1-2 log entries form a recognized pattern with `reviewer-simulation-skill` that has appeared >= threshold times in the log. See `skill-conventions.md > Workflow Memory > Pattern Detection` for the full algorithm.
+- If a pattern is found, present recommendation via AskUserQuestion:
+  - Question: "检测到常用流程：[pattern]（已出现 N 次）。是否直接以 direct 模式运行 reviewer-simulation-skill？"
+  - Options: "Yes, proceed" / "No, continue normally"
+- If user accepts: set mode to `direct`, skip Ask Strategy questions.
+- If user declines or AskUserQuestion unavailable: continue in normal mode.
+
 ### Step 1: Collect Context
 
 - Load `references/expression-patterns.md` overview.
@@ -113,6 +123,7 @@ This Skill simulates peer review of academic papers, producing a structured bili
 - Read user input: file via Read tool, or pasted text from conversation.
 - **Guard -- full paper required:** If input is partial (only introduction, only methods, etc.), refuse with message: "This Skill requires the full paper for review. Please provide the complete manuscript."
 - **Guard -- minimum length:** If input is under ~300 words, warn: "Text appears too short for a full paper review. Provide the complete manuscript."
+- **Record workflow:** Append `{"skill": "reviewer-simulation-skill", "ts": "<ISO timestamp>"}` to `.planning/workflow-memory.json`. Create file as `[]` if missing. Drop oldest entry if log length >= 50.
 
 ### Step 2: Analyze Paper
 

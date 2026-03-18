@@ -107,6 +107,16 @@ This Skill generates or optimizes LaTeX figure and table captions for academic p
 
 ## Workflow
 
+### Step 0: Workflow Memory Check
+
+- Read `.planning/workflow-memory.json`. If file missing or empty, skip to Step 1.
+- Check if the last 1-2 log entries form a recognized pattern with `caption-skill` that has appeared >= threshold times in the log. See `skill-conventions.md > Workflow Memory > Pattern Detection` for the full algorithm.
+- If a pattern is found, present recommendation via AskUserQuestion:
+  - Question: "检测到常用流程：[pattern]（已出现 N 次）。是否直接以 direct 模式运行 caption-skill？"
+  - Options: "Yes, proceed" / "No, continue normally"
+- If user accepts: set mode to `direct`, skip Ask Strategy questions.
+- If user declines or AskUserQuestion unavailable: continue in normal mode.
+
 ### Step 1: Collect Context
 
 - Load `references/expression-patterns.md` overview.
@@ -114,6 +124,7 @@ This Skill generates or optimizes LaTeX figure and table captions for academic p
 - Read user input: if file provided, use Read tool; otherwise accept pasted text description.
 - Run Ask Strategy questions to fill any gaps not already answered by input.
 - Determine path: if user provides an existing caption to improve → Optimize path; if user provides content description only → Generate path; ask if ambiguous.
+- **Record workflow:** Append `{"skill": "caption-skill", "ts": "<ISO timestamp>"}` to `.planning/workflow-memory.json`. Create file as `[]` if missing. Drop oldest entry if log length >= 50.
 
 ### Step 2a: Generate Path (new caption from content description)
 

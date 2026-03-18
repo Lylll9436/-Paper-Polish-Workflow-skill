@@ -114,6 +114,16 @@ This Skill polishes English academic text for journal submission through two mod
 
 ## Workflow
 
+### Step 0: Workflow Memory Check
+
+- Read `.planning/workflow-memory.json`. If file missing or empty, skip to Step 1.
+- Check if the last 1-2 log entries form a recognized pattern with `polish-skill` that has appeared >= threshold times in the log. See `skill-conventions.md > Workflow Memory > Pattern Detection` for the full algorithm.
+- If a pattern is found, present recommendation via AskUserQuestion:
+  - Question: "检测到常用流程：[pattern]（已出现 N 次）。是否直接以 direct 模式运行 polish-skill？"
+  - Options: "Yes, proceed" / "No, continue normally"
+- If user accepts: set mode to `direct`, skip Ask Strategy questions.
+- If user declines or AskUserQuestion unavailable: continue in normal mode.
+
 ### Quick-fix (Direct) Mode
 
 **Step 1 -- Collect Context:**
@@ -121,6 +131,7 @@ This Skill polishes English academic text for journal submission through two mod
 - Load references: expression pattern leaf by section type, all anti-AI pattern leaves, journal template if specified.
 - Detect input characteristics: translationese presence, section type, text length for smart adaptation.
 - **Opt-out check:** Scan the user's trigger prompt for any of these phrases (case-insensitive, exact phrase match): `english only`, `no bilingual`, `only english`, `不要中文`. Store result as `bilingual_mode` (true/false). This flag governs Step 5 bilingual output below.
+- **Record workflow:** Append `{"skill": "polish-skill", "ts": "<ISO timestamp>"}` to `.planning/workflow-memory.json`. Create file as `[]` if missing. Drop oldest entry if log length >= 50.
 
 **Step 2 -- Polish:**
 - Single intelligent pass covering expression, logic, and structure as needed based on text quality.
