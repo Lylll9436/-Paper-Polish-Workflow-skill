@@ -32,7 +32,7 @@ Full details: `.planning/milestones/v1.0-ROADMAP.md`
 - [x] **Phase 11: Convention & Tech Debt** - Resolve v1.0 debt and update conventions before any new authoring (completed 2026-03-17)
 - [x] **Phase 12: AskUserQuestion Fix** - Fix P0 bug: paper-polish-workflow uses non-existent tool names (completed 2026-03-17)
 - [x] **Phase 13: Bilingual Pattern Standardization** - Create shared bilingual output specification and reference file (completed 2026-03-17)
-- [ ] **Phase 14: Repo-to-Paper Core Structure** - Repo scanning, outline generation (H1/H2/H3), and user checkpoints
+- [x] **Phase 14: Repo-to-Paper Core Structure** - Repo scanning, outline generation (H1/H2/H3), and user checkpoints (completed 2026-03-18)
 - [ ] **Phase 15: Literature Integration** - Semantic Scholar batch search at H2 stage with ref file output
 - [ ] **Phase 16: Body Generation & Bilingual Output** - Section body text with evidence annotations and bilingual comparison
 - [ ] **Phase 17: Existing Skills Bilingual Update** - Add bilingual output mode to 7 existing Skills
@@ -168,7 +168,7 @@ Phases execute in numeric order: 11 -> 12 -> 13 -> 14 -> 15 -> 16 -> 17 -> 18
 | 11. Convention & Tech Debt | 1/1 | Complete    | 2026-03-17 | - |
 | 12. AskUserQuestion Fix | 1/1 | Complete    | 2026-03-17 | - |
 | 13. Bilingual Pattern Standardization | 1/1 | Complete    | 2026-03-17 | - |
-| 14. Repo-to-Paper Core Structure | v2.0 | 0/1 | Not started | - |
+| 14. Repo-to-Paper Core Structure | 1/1 | Complete   | 2026-03-18 | - |
 | 15. Literature Integration | v2.0 | 0/TBD | Not started | - |
 | 16. Body Generation & Bilingual Output | v2.0 | 0/TBD | Not started | - |
 | 17. Existing Skills Bilingual Update | v2.0 | 0/TBD | Not started | - |

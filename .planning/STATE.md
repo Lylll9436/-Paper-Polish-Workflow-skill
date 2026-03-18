@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Repo-to-Paper & Bilingual Enhancement
 status: completed
-stopped_at: Completed 13-01-PLAN.md
-last_updated: "2026-03-17T16:54:50.121Z"
-last_activity: 2026-03-17 — Phase 13 plan 01 completed
+stopped_at: Completed 14-01-PLAN.md
+last_updated: "2026-03-18T04:40:00Z"
+last_activity: 2026-03-18 — Phase 14 plan 01 completed
 progress:
   total_phases: 8
-  completed_phases: 3
-  total_plans: 3
-  completed_plans: 3
+  completed_phases: 4
+  total_plans: 4
+  completed_plans: 4
   percent: 100
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-17)
 
 **Core value:** Every Skill must produce output that is directly usable in a real paper submission
-**Current focus:** Phase 13 - Bilingual Pattern Standardization
+**Current focus:** Phase 14 - Repo-to-Paper Core Structure
 
 ## Current Position
 
-Phase: 13 of 18 (Bilingual Pattern Standardization)
+Phase: 14 of 18 (Repo-to-Paper Core Structure)
 Plan: 1 of 1 (Complete)
-Status: Phase 13 complete
-Last activity: 2026-03-17 — Phase 13 plan 01 completed
+Status: Phase 14 complete
+Last activity: 2026-03-18 — Phase 14 plan 01 completed
 
 Progress: [██████████] 100%
 
@@ -40,9 +40,9 @@ Progress: [██████████] 100%
 - Total execution time: 1h 53m
 
 **Velocity (v2.0):**
-- Total plans completed: 3
-- Average duration: 2 min
-- Total execution time: 8 min
+- Total plans completed: 4
+- Average duration: 5 min
+- Total execution time: 20 min
 
 *Updated after each plan completion*
 
@@ -64,6 +64,9 @@ v1.0 decisions preserved in `.planning/milestones/v1.0-ROADMAP.md`.
 - [Phase 13]: Standardized on [Chinese] label (not [中文]) for Markdown blockquote bilingual output
 - [Phase 13]: Paragraph markers REQUIRED for paragraph-level files, OPTIONAL for structured-output Skills
 - [Phase 13]: Opt-out keywords are exact phrase matches: english only, no bilingual, only english, 不要中文
+- [Phase 14]: Expanded repo-patterns.md with Skip Rules and directory indicator table for completeness (96 lines)
+- [Phase 14]: Added Examples section to SKILL.md with full CEUS journal workflow demonstration
+- [Phase 14]: Used auto-proceed (not hard checkpoint) for Step 1 scan summary
 
 ### Pending Todos
 
@@ -77,6 +80,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T16:47:36Z
-Stopped at: Completed 13-01-PLAN.md
-Resume file: .planning/phases/13-bilingual-pattern-standardization/13-01-SUMMARY.md
+Last session: 2026-03-18T04:40:00Z
+Stopped at: Completed 14-01-PLAN.md
+Resume file: .planning/phases/14-repo-to-paper-core-structure/14-01-SUMMARY.md

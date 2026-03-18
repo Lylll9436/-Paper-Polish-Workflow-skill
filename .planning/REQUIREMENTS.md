@@ -9,14 +9,14 @@ Requirements for v2.0 milestone: Repo-to-Paper & Bilingual Enhancement.
 
 ### Repo-to-Paper
 
-- [ ] **REPO-01**: User can point Skill to an experiment repo and get automatic full scan identifying valuable files (README, configs, results, code)
-- [ ] **REPO-02**: User can generate H1 (section) headings from repo analysis and review/approve before proceeding
-- [ ] **REPO-03**: User can generate H2 (subsection) headings with detailed outlines and review/approve before proceeding
+- [x] **REPO-01**: User can point Skill to an experiment repo and get automatic full scan identifying valuable files (README, configs, results, code)
+- [x] **REPO-02**: User can generate H1 (section) headings from repo analysis and review/approve before proceeding
+- [x] **REPO-03**: User can generate H2 (subsection) headings with detailed outlines and review/approve before proceeding
 - [ ] **REPO-04**: At H2 completion, all section references are collected via Semantic Scholar with metadata + abstracts and saved to ref files
-- [ ] **REPO-05**: User can generate H3 headings and review/approve before proceeding
+- [x] **REPO-05**: User can generate H3 headings and review/approve before proceeding
 - [ ] **REPO-06**: User can generate body text for each section with `[SOURCE: file:line]` annotations for claims derived from repo data
 - [ ] **REPO-07**: Generated output uses journal template (CEUS) formatting
-- [ ] **REPO-08**: Repo scan heuristics are extracted to a reference file `references/repo-patterns.md` for maintainability
+- [x] **REPO-08**: Repo scan heuristics are extracted to a reference file `references/repo-patterns.md` for maintainability
 
 ### Bilingual
 
@@ -68,14 +68,14 @@ Deferred beyond v2.0.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REPO-01 | Phase 14 | Pending |
-| REPO-02 | Phase 14 | Pending |
-| REPO-03 | Phase 14 | Pending |
+| REPO-01 | Phase 14 | Complete |
+| REPO-02 | Phase 14 | Complete |
+| REPO-03 | Phase 14 | Complete |
 | REPO-04 | Phase 15 | Pending |
-| REPO-05 | Phase 14 | Pending |
+| REPO-05 | Phase 14 | Complete |
 | REPO-06 | Phase 16 | Pending |
 | REPO-07 | Phase 16 | Pending |
-| REPO-08 | Phase 14 | Pending |
+| REPO-08 | Phase 14 | Complete |
 | BILN-01 | Phase 16 | Pending |
 | BILN-02 | Phase 13 | Complete |
 | BILN-03 | Phase 13 | Complete |
