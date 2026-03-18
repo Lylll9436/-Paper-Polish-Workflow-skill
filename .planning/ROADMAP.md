@@ -103,10 +103,10 @@ Plans:
   1. At H2 checkpoint completion, the Skill derives search queries from section titles and collects references via Semantic Scholar MCP
   2. Ref files are saved to `.paper-refs/` directory with title, abstract summary, BibTeX, and relevance note per reference
   3. When Semantic Scholar MCP is unavailable, the Skill inserts `[CITATION NEEDED]` placeholders and continues without blocking
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 15-01: TBD
+- [ ] 15-01-PLAN.md — Add Step 2.5 Literature Collection to repo-to-paper-skill with MCP batch search, ref file output, and graceful fallback
 
 ### Phase 16: Body Generation & Bilingual Output
 **Goal**: User gets complete section body text with evidence annotations, journal formatting, and optional bilingual comparison
@@ -169,7 +169,7 @@ Phases execute in numeric order: 11 -> 12 -> 13 -> 14 -> 15 -> 16 -> 17 -> 18
 | 12. AskUserQuestion Fix | 1/1 | Complete    | 2026-03-17 | - |
 | 13. Bilingual Pattern Standardization | 1/1 | Complete    | 2026-03-17 | - |
 | 14. Repo-to-Paper Core Structure | 1/1 | Complete    | 2026-03-18 | - |
-| 15. Literature Integration | v2.0 | 0/TBD | Not started | - |
+| 15. Literature Integration | v2.0 | 0/1 | Not started | - |
 | 16. Body Generation & Bilingual Output | v2.0 | 0/TBD | Not started | - |
 | 17. Existing Skills Bilingual Update | v2.0 | 0/TBD | Not started | - |
 | 18. Workflow Memory | v2.0 | 0/TBD | Not started | - |
