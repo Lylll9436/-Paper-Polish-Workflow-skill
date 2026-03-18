@@ -21,6 +21,7 @@ tools:
 references:
   required:
     - references/expression-patterns.md
+    - references/bilingual-output.md
   leaf_hints:
     - references/expression-patterns/introduction-and-gap.md
     - references/expression-patterns/methods-and-data.md
@@ -127,6 +128,8 @@ This Skill simulates peer review of academic papers, producing a structured bili
 - **IMPORTANT:** Generate concerns FIRST, then derive dimension scores from the concerns. This prevents score-concern inconsistency.
 
 ### Step 3: Generate Review Report
+
+- **Opt-out check:** Before generating the report, scan the user's original trigger prompt for any of these phrases (case-insensitive, exact phrase match): `english only`, `no bilingual`, `only english`, `不要中文`. If any phrase is detected: omit all `> **[Chinese]** ...` blockquotes from the report -- produce English-only concerns, questions, and verdict. If none detected: include Chinese blockquotes as normal.
 
 Write the review report in the following locked structure:
 
