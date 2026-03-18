@@ -2,10 +2,10 @@
 name: repo-to-paper-skill
 description: >-
   Scan an experiment repo and generate a complete paper outline (H1/H2/H3)
-  with user approval checkpoints at each level. Python ML repos.
-  Collects literature references via Semantic Scholar MCP at H2 stage.
-  扫描实验仓库，逐级生成论文大纲（H1/H2/H3），每级用户确认后推进。
-  H2阶段通过Semantic Scholar MCP自动收集文献引用。
+  with user approval checkpoints at each level, then generate body text
+  with evidence annotations, citations, and bilingual output. Python ML repos.
+  扫描实验仓库，逐级生成论文大纲（H1/H2/H3），每级用户确认后推进，
+  然后生成带证据标注、引用和双语输出的正文文本。
 triggers:
   primary_intent: generate paper outline from experiment repo
   examples:
@@ -24,14 +24,16 @@ references:
   required:
     - references/repo-patterns.md
     - references/bilingual-output.md
-  leaf_hints:
+    - references/body-generation-rules.md
     - references/journals/ceus.md
+  leaf_hints: []
 input_modes:
   - repo_path
 output_contract:
   - scan_summary
   - paper_outline
   - literature_refs
+  - body_text
 ---
 
 ## Purpose
@@ -62,7 +64,7 @@ for downstream body generation.
 
 | Mode | Default | Behavior |
 |------|---------|----------|
-| `guided` | Yes | Full 4-step workflow with confirmation at each heading level |
+| `guided` | Yes | Full 5-step workflow with confirmation at each heading level and section-by-section body generation |
 | `direct` | | Not supported -- outline generation inherently requires user validation at each level |
 | `batch` | | Not supported -- each repo requires unique analysis |
 
@@ -76,17 +78,17 @@ for downstream body generation.
 |------|---------|
 | `references/repo-patterns.md` | File categorization patterns and section mapping rules |
 | `references/bilingual-output.md` | Bilingual output format (Skill is bilingual-eligible) |
+| `references/body-generation-rules.md` | Anti-hallucination rules, citation integration, bilingual format, references.bib algorithm |
+| `references/journals/ceus.md` | CEUS journal formatting contract (writing style, section guidance) |
 
-### Leaf Hints (loaded when needed)
+### Leaf Hints
 
-| File | When to Load |
-|------|--------------|
-| `references/journals/ceus.md` | When user specifies CEUS as target journal |
+None. All reference files are in `required` because Step 5 body generation always needs CEUS formatting.
 
 ### Loading Rules
 
-- Load required references at Step 1 start.
-- Load journal template at Step 2 if a journal is specified.
+- Load `repo-patterns.md` and `bilingual-output.md` at Step 1 start.
+- Load `body-generation-rules.md` and `journals/ceus.md` at Step 5 start.
 - If journal template file is missing, refuse: "Journal template for [X] not found. Available: CEUS."
 
 ## Ask Strategy
@@ -288,6 +290,66 @@ Wait for user confirmation before proceeding to Step 4.
 - Same confirmation loop as Step 2: "Generated N H3 sub-subsections. Please confirm, modify,
   or add. This completes the outline structure."
 
+---
+
+### Step 5: Body Generation
+
+Step 5 auto-continues in the same session after H3 confirmation. It uses the H3 outline already in memory -- does not re-read `paper_outline.md`.
+
+**Prepare:**
+- Load `references/body-generation-rules.md` and `references/journals/ceus.md`
+- Check if `{repo_path}/.paper-refs/` exists. If missing: note that all citation positions will use `[CITATION NEEDED]`
+- Create `{repo_path}/.paper-output/` directory if it does not exist
+
+**Section selection:**
+- Display all H1 sections via AskUserQuestion (multiSelect):
+
+  ```
+  AskUserQuestion({
+    question: "Which sections should I generate body text for?",
+    options: [
+      { label: "1. [H1 title]", description: "[H2 subsection summary]" },
+      ...one option per H1 section from confirmed outline
+    ]
+  })
+  ```
+
+- User selects which sections to generate in this session
+
+**Generation loop (for each selected H1 section, sequentially):**
+
+1. Read relevant repo files using the Category to Paper Section Mapping from `references/repo-patterns.md`
+2. Read `{repo_path}/.paper-refs/{section}.md` if it exists -- extract `\cite{key}` citation keys
+3. Generate full section `.tex` content following ALL rules in `references/body-generation-rules.md`:
+   - `\section{}`, `\subsection{}`, `\subsubsection{}` LaTeX heading commands from confirmed H2/H3 structure
+   - Academic prose following CEUS writing style from `references/journals/ceus.md`
+   - `\cite{key}` inline citations (keys from `.paper-refs/` only; `[CITATION NEEDED]` for unsupported claims)
+   - `[SOURCE: file:line]` annotations on all repo-derived claims (specific numbers, configs, model names)
+   - `[RESULTS NEEDED]` / `[EXACT VALUE: metric]` for unknown quantitative data
+   - Bilingual: `% --- Paragraph N ---` markers + `%` Chinese comment lines before each English paragraph (skip if opt-out detected)
+4. Write to `{repo_path}/.paper-output/{section}.tex`
+5. Display the generated section content to the user
+6. AskUserQuestion for confirmation:
+
+   ```
+   AskUserQuestion({
+     question: "Section [N]: [Title] generated. Please review above.",
+     options: [
+       { label: "Confirm", description: "Accept this section and proceed to next" },
+       { label: "Modify", description: "Describe changes needed (will regenerate entire section)" },
+       { label: "Skip", description: "Skip this section, move to next" }
+     ]
+   })
+   ```
+
+   - **Confirm:** proceed to next selected section
+   - **Modify:** user describes changes -> regenerate entire section -> re-display -> loop until confirmed
+   - **Skip:** move to next section without writing file
+
+**After all selected sections confirmed:**
+- Generate `references.bib` following the algorithm in `references/body-generation-rules.md`
+- Display completion summary: number of sections generated, files written, references.bib entry count
+
 ## Output Contract
 
 | Output | Format | Condition |
@@ -295,6 +357,7 @@ Wait for user confirmation before proceeding to Step 4.
 | `scan_summary` | Categorized summary table | Always -- Step 1 |
 | `paper_outline` | Hierarchical H1/H2/H3 with descriptions and source annotations | After all steps confirmed |
 | `literature_refs` | Per-section Markdown files in `{repo_path}/.paper-refs/` with reference cards | After Step 2.5 (skipped if MCP unavailable) |
+| `body_text` | Per-H1 `.tex` files in `{repo_path}/.paper-output/` + `references.bib` | After Step 5 sections confirmed |
 
 **Bilingual eligibility:** This Skill produces academic text (one-sentence heading descriptions).
 Bilingual mode is ON by default; opt-out via keywords in `references/bilingual-output.md`.
@@ -319,6 +382,9 @@ After final H3 confirmation, offer to save the complete outline to a file using 
 | Zero search results for an H2 | Display warning with ⚠ prefix; mark H2 as [CITATION NEEDED]; continue to next H2 |
 | MCP call fails mid-batch | Mark that specific H2 as [CITATION NEEDED]; continue with remaining H2 subsections |
 | Springer papers with empty abstracts | Call get-paper-abstract; if still empty, display "Abstract not available" in ref card; still include paper |
+| .paper-refs/ directory missing | Continue generating; all citation positions use `[CITATION NEEDED]` placeholders; do not block |
+| User selects zero sections in Step 5 | Skip body generation entirely; display "No sections selected. Body generation skipped." |
+| Modification loop exceeds 3 iterations | Proceed with current version; warn "Multiple revision cycles detected. Consider manual editing for fine adjustments." |
 
 ## Fallbacks
 
@@ -330,6 +396,7 @@ After final H3 confirmation, offer to save the complete outline to a file using 
 | Journal template missing | Refuse with message from Edge Cases |
 | Write tool unavailable | Present final outline in conversation; user saves manually |
 | Semantic Scholar MCP unavailable | Skip Step 2.5 entirely; add [CITATION NEEDED] after each H2 description; warn user; proceed to H3 generation |
+| `references/body-generation-rules.md` missing | Refuse: "Required reference file references/body-generation-rules.md not found. Cannot generate body text." |
 
 ## Examples
 
