@@ -10,5 +10,10 @@
     "verifier": true,
     "nyquist_validation": true,
     "_auto_chain_active": false
+  },
+  "workflow_memory": {
+    "threshold": 5,
+    "max_history": 50,
+    "max_chain": 3
   }
 }
