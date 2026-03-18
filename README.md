@@ -1,10 +1,18 @@
-# Paper Polish Workflow
+<p align="center">
+  <img src="assets/logo.jpg" alt="Paper Polish Workflow Suite" width="360">
+</p>
 
-**11 项学术论文写作、润色与投稿技能套件 —— 基于 Claude Code 驱动。**
+<h1 align="center">Paper Polish Workflow</h1>
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Claude Code](https://img.shields.io/badge/Claude%20Code-Skills-blue)
-![npm](https://img.shields.io/npm/v/@lylll9436/paper-polish-workflow-skill?registry_uri=https%3A%2F%2Fnpm.pkg.github.com)
+<p align="center">
+  <strong>11 项学术论文写作、润色与投稿技能套件 —— 基于 Claude Code 驱动。</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
+  <img src="https://img.shields.io/badge/Claude%20Code-Skills-blue" alt="Claude Code">
+  <img src="https://img.shields.io/npm/v/@lylll9436/paper-polish-workflow-skill?registry_uri=https%3A%2F%2Fnpm.pkg.github.com" alt="npm">
+</p>
 
 ---
 
