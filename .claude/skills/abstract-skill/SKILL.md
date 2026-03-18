@@ -23,6 +23,7 @@ tools:
 references:
   required:
     - references/expression-patterns.md
+    - references/bilingual-output.md
   leaf_hints:
     - references/expression-patterns/introduction-and-gap.md
     - references/expression-patterns/results-and-discussion.md
@@ -34,6 +35,7 @@ input_modes:
 output_contract:
   - labeled_abstract
   - clean_abstract
+  - bilingual_abstract
 ---
 
 ## Purpose
@@ -115,6 +117,7 @@ This Skill generates or optimizes academic paper abstracts using the locked 5-se
 - If journal specified, load `references/journals/[journal].md`. If missing, refuse with: "Journal template for [X] not found. Available: CEUS."
 - Read user input: file via Read tool, or pasted text from conversation.
 - Determine path: restructure if input reads like a formed abstract; generate if raw materials. Ask if ambiguous.
+- **Opt-out check:** Scan the user's trigger prompt for any of these phrases (case-insensitive, exact phrase match): `english only`, `no bilingual`, `only english`, `不要中文`. Store result as `bilingual_mode` (true/false). This flag governs Step 3 output below.
 
 ### Step 2a: Generate Path (raw content provided)
 
@@ -142,6 +145,16 @@ This Skill generates or optimizes academic paper abstracts using the locked 5-se
 - Present the clean version (plain paragraph, no labels) separated by `---`.
 - If the user wants to save: offer to write to a file using the Write tool.
 - If word limit was specified, report word count; warn if over limit.
+- **Bilingual display:** If `bilingual_mode` is true: after presenting the labeled version and after presenting the clean version, append a `> **[Chinese]** ...` blockquote for each sentence of the abstract. Use a header: "**双语对照 / Bilingual Comparison:**" before the blockquotes. Format:
+
+  > **[Chinese]** [1: 贡献] ...
+  > **[Chinese]** [2: 难度] ...
+  > **[Chinese]** [3: 方法] ...
+  > **[Chinese]** [4: 证据] ...
+  > **[Chinese]** [5: 关键结果] ...
+
+  Each blockquote corresponds to one Farquhar formula sentence. Label prefixes in Chinese are for readability only -- the clean version Chinese follows the plain paragraph structure without labels.
+- If `bilingual_mode` is false (opt-out detected): skip bilingual display entirely.
 - Optionally recommend the Polish Skill for further expression refinement.
 
 ## Output Contract
@@ -151,6 +164,7 @@ This Skill generates or optimizes academic paper abstracts using the locked 5-se
 | `labeled_abstract` | Labeled 5-sentence block with `[N: Position]` markers | Always |
 | `clean_abstract` | Plain paragraph with no labels, separated by `---` | Always |
 | Word count | Integer | When user specified a word limit |
+| `bilingual_abstract` | `> **[Chinese]** ...` blockquotes in session (one per sentence) | When bilingual_mode is true (default). Skipped when opt-out detected. |
 
 **Exact labeled format:**
 
