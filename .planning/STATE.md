@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Repo-to-Paper & Bilingual Enhancement
 status: completed
-stopped_at: Phase 16 context gathered
-last_updated: "2026-03-18T08:23:52.821Z"
-last_activity: 2026-03-18 — Phase 15 plan 01 completed
+stopped_at: Completed 16-01-PLAN.md
+last_updated: "2026-03-18T10:27:58.213Z"
+last_activity: 2026-03-18 — Phase 16 plan 01 completed
 progress:
   total_phases: 8
-  completed_phases: 5
-  total_plans: 5
-  completed_plans: 5
+  completed_phases: 6
+  total_plans: 6
+  completed_plans: 6
   percent: 100
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-17)
 
 **Core value:** Every Skill must produce output that is directly usable in a real paper submission
-**Current focus:** Phase 14 - Repo-to-Paper Core Structure
+**Current focus:** Phase 16 - Body Generation & Bilingual Output
 
 ## Current Position
 
-Phase: 15 of 18 (Literature Integration)
+Phase: 16 of 18 (Body Generation & Bilingual Output)
 Plan: 1 of 1 (Complete)
-Status: Phase 15 complete
-Last activity: 2026-03-18 — Phase 15 plan 01 completed
+Status: Phase 16 complete
+Last activity: 2026-03-18 — Phase 16 plan 01 completed
 
 Progress: [██████████] 100%
 
@@ -40,9 +40,9 @@ Progress: [██████████] 100%
 - Total execution time: 1h 53m
 
 **Velocity (v2.0):**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: 5 min
-- Total execution time: 20 min
+- Total execution time: 25 min
 
 *Updated after each plan completion*
 
@@ -67,6 +67,9 @@ v1.0 decisions preserved in `.planning/milestones/v1.0-ROADMAP.md`.
 - [Phase 14]: Expanded repo-patterns.md with Skip Rules and directory indicator table for completeness (96 lines)
 - [Phase 14]: Added Examples section to SKILL.md with full CEUS journal workflow demonstration
 - [Phase 14]: Used auto-proceed (not hard checkpoint) for Step 1 scan summary
+- [Phase 16]: Extracted generation rules to references/body-generation-rules.md to keep SKILL.md under 450 lines
+- [Phase 16]: Moved journals/ceus.md from leaf_hints to required because Step 5 always needs CEUS formatting
+- [Phase 16]: SKILL.md at 448 lines justified by 5-step complexity with generation rules already extracted to reference file
 
 ### Pending Todos
 
@@ -80,6 +83,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T08:23:52.819Z
-Stopped at: Phase 16 context gathered
-Resume file: .planning/phases/16-body-generation-bilingual-output/16-CONTEXT.md
+Last session: 2026-03-18T10:26:01Z
+Stopped at: Completed 16-01-PLAN.md
+Resume file: .planning/phases/16-body-generation-bilingual-output/16-01-SUMMARY.md

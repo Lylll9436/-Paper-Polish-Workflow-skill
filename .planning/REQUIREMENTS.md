@@ -14,13 +14,13 @@ Requirements for v2.0 milestone: Repo-to-Paper & Bilingual Enhancement.
 - [x] **REPO-03**: User can generate H2 (subsection) headings with detailed outlines and review/approve before proceeding
 - [ ] **REPO-04**: At H2 completion, all section references are collected via Semantic Scholar with metadata + abstracts and saved to ref files
 - [x] **REPO-05**: User can generate H3 headings and review/approve before proceeding
-- [ ] **REPO-06**: User can generate body text for each section with `[SOURCE: file:line]` annotations for claims derived from repo data
-- [ ] **REPO-07**: Generated output uses journal template (CEUS) formatting
+- [x] **REPO-06**: User can generate body text for each section with `[SOURCE: file:line]` annotations for claims derived from repo data
+- [x] **REPO-07**: Generated output uses journal template (CEUS) formatting
 - [x] **REPO-08**: Repo scan heuristics are extracted to a reference file `references/repo-patterns.md` for maintainability
 
 ### Bilingual
 
-- [ ] **BILN-01**: Repo-to-paper output includes paragraph-by-paragraph English + Chinese comparison
+- [x] **BILN-01**: Repo-to-paper output includes paragraph-by-paragraph English + Chinese comparison
 - [x] **BILN-02**: Bilingual output format standardized: LaTeX comment for .tex output, markdown blockquote for .md output
 - [x] **BILN-03**: Shared bilingual reference file `references/bilingual-output.md` created as pattern documentation
 - [ ] **BILN-04**: 7 existing Skills updated to support bilingual output (translation, polish, de-ai, reviewer, abstract, experiment, logic)
@@ -73,10 +73,10 @@ Deferred beyond v2.0.
 | REPO-03 | Phase 14 | Complete |
 | REPO-04 | Phase 15 | Pending |
 | REPO-05 | Phase 14 | Complete |
-| REPO-06 | Phase 16 | Pending |
-| REPO-07 | Phase 16 | Pending |
+| REPO-06 | Phase 16 | Complete |
+| REPO-07 | Phase 16 | Complete |
 | REPO-08 | Phase 14 | Complete |
-| BILN-01 | Phase 16 | Pending |
+| BILN-01 | Phase 16 | Complete |
 | BILN-02 | Phase 13 | Complete |
 | BILN-03 | Phase 13 | Complete |
 | BILN-04 | Phase 17 | Pending |
