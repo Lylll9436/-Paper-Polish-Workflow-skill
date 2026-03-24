@@ -1,7 +1,7 @@
 {
   "name": "paper-polish-workflow",
   "description": "16-Skill Claude Code plugin for academic paper writing, polishing, and submission.",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "author": {
     "name": "Lylll9436"
   },
@@ -14,5 +14,6 @@
     "latex",
     "translation",
     "peer-review"
-  ]
+  ],
+  "skills": "./skills/"
 }
