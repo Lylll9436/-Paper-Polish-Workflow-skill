@@ -9,9 +9,10 @@
       "source": {
         "source": "npm",
         "package": "@lylll9436/paper-polish-workflow-skill",
-        "version": "^2.2.0"
+        "version": "^2.3.0",
+        "registry": "https://registry.npmjs.org"
       },
-      "description": "15-Skill suite for academic paper writing, polishing, and submission — powered by Claude Code."
+      "description": "16-Skill Claude Code plugin for academic paper writing, polishing, and submission."
     }
   ]
 }
