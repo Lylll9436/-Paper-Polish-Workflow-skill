@@ -16,8 +16,12 @@ node_modules/
 .planning/
 .sisyphus/
 
-# Claude Code local settings
-.claude/settings.local.json
+# Claude Code local (dev use only, not part of plugin)
+.claude/
+paper-polish-workflow/
+assets/
+examples/
+.npmrc
 
 # Stackdumps
 *.stackdump
